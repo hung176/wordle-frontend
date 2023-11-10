@@ -1,27 +1,27 @@
 import React from 'react';
 
-export enum SquareColor {
+export enum LetterColor {
   green = 'green',
   yellow = 'yellow',
   gray = 'gray',
 }
 
-export interface SquareProps {
+export interface LetterProps {
   letter?: string;
   bg?: string;
 }
 
-const Square: React.FC<SquareProps> = ({ letter, bg }: SquareProps) => {
+const Letter: React.FC<LetterProps> = ({ letter, bg }: LetterProps) => {
   const textColor = bg ? 'text-white' : 'text-black';  
   let backgroundColor;
   let borderColor = letter ? 'border-gray-400' : 'border-gray-300';
-  if (bg === SquareColor.green) {
+  if (bg === LetterColor.green) {
     backgroundColor = 'bg-wl-green';
     borderColor = 'border-wl-green';
-  } else if (bg === SquareColor.yellow) {
+  } else if (bg === LetterColor.yellow) {
     backgroundColor = 'bg-wl-yellow';
     borderColor = 'border-wl-yellow';
-  } else if (bg === SquareColor.gray) {
+  } else if (bg === LetterColor.gray) {
     backgroundColor = 'bg-wl-gray';
     borderColor = 'border-wl-gray';
   } else {
@@ -37,4 +37,4 @@ const Square: React.FC<SquareProps> = ({ letter, bg }: SquareProps) => {
   );
 };
 
-export default Square;
+export default Letter;
