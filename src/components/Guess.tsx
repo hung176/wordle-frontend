@@ -9,7 +9,7 @@ const Guess: React.FC<GuessProps> = ({ guess }) => {
   return (
     <div className='w-80 flex items-center justify-between'>
       {guess.map((g, index) => (
-        <Letter key={index} letter={g.letter} bg={g.bg} />
+        <Letter key={index} letter={g.letter} />
       ))}
     </div>
   );

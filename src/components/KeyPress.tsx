@@ -18,7 +18,7 @@ const KeyPress: React.FC<KeyPressProps> = ({ char }) => {
   }
   return (
     <div className={styles}>
-      <span>{char}</span>
+      {char}
     </div>
   );
 }
