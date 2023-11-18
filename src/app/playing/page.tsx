@@ -24,13 +24,14 @@ const WordleGame: React.FC<Props> = () => {
       </div>
       <div className='w-[500px] h-auto flex flex-col justify-center items-center'>
         <div className='h-96 mb-5 flex flex-col justify-between'>
-          {/* <Guess guess={[{ letter: 'A', bg: LetterColor.gray }, { letter: 'B' }, { letter: 'C' }, { letter: 'D' }, { letter: 'E' }]} />
+          <Guess guess={[{ letter: 'A', className: 'bg-wl-green border-wl-green text-white' }, { letter: 'B' }, { letter: 'C' }, { letter: 'D' }, { letter: 'E' }]} />
+          <Guess guess={[{ letter: 'W' }, { letter: 'E' }, { letter: 'S', className: 'bg-wl-yellow border-wl-yellow text-white' }, { letter: 'T' }, { letter: 'E' }]} />
           <Guess guess={[{ letter: 'A' }, { letter: 'B' }, { letter: 'C' }, { letter: 'D' }, { letter: 'E' }]} />
           <Guess guess={[{ letter: 'A' }, { letter: 'B' }, { letter: 'C' }, { letter: 'D' }, { letter: 'E' }]} />
+          <Guess guess={[{ letter: 'A' }, { letter: 'B', className: 'bg-wl-gray border-wl-gray text-white' }, { letter: 'C' }, { letter: 'D' }, { letter: 'E' }]} />
           <Guess guess={[{ letter: 'A' }, { letter: 'B' }, { letter: 'C' }, { letter: 'D' }, { letter: 'E' }]} />
-          <Guess guess={[{ letter: 'A' }, { letter: 'B' }, { letter: 'C' }, { letter: 'D' }, { letter: 'E' }]} />
-          <Guess guess={[{ letter: 'A' }, { letter: 'B' }, { letter: 'C' }, { letter: 'D' }, { letter: 'E' }]} /> */}
         </div>
+
         <div className='w-[100%]'>
           <VirtualKeyboard  />
         </div>
