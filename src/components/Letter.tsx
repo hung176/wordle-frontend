@@ -10,7 +10,7 @@ const Letter: React.FC<LetterProps> = ({ letter, className, ...rest }) => {
       {...rest}
       className={`flex items-center justify-center font-bold border-2 border-gray-300 text-3xl ${className} `}
     >
-      {letter}
+      {letter?.toUpperCase()}
     </div>
   );
 };

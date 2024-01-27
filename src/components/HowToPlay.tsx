@@ -56,9 +56,9 @@ const HowToPlay: React.FC<HowToPlayProps> = ({ open, onClose }) => {
               <span className='text-base'>The color of the tiles will change to show how close your guess was to the word.</span>
             </div>
           </div>
-          <div className='flex flex-col justify-between mt-3 h-64'>
+          <div className='flex flex-col justify-between mt-3 h-72'>
             <p className='font-semibold'>Example</p>
-            <div>
+            <div className='mb-4'>
               <div className='flex items-center mb-1'>
                 {EXAMPLE_ONE.map(({ letter, style }, index) => (
                   <Letter key={index} letter={letter} className={`w-6 h-6 p-5 mr-1 ${style}`} />
@@ -71,7 +71,7 @@ const HowToPlay: React.FC<HowToPlayProps> = ({ open, onClose }) => {
               </div>
             </div>
 
-            <div>
+            <div className='mb-4'>
               <div className='flex items-center mb-1'>
                 {EXAMPLE_TWO.map(({ letter, style }, index) => (
                   <Letter key={index} letter={letter} className={`w-6 h-6 p-5 mr-1 ${style}`} />
