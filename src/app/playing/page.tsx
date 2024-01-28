@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect } from 'react';
-import VirtualKeyboard, { KeyPressType } from '@/components/VirtualKeyboard';
+import VirtualKeyboard, { KEYS, KeyPressType } from '@/components/VirtualKeyboard';
 import Guess from '@/components/Guess';
 import HowToPlay from '@/components/HowToPlay';
 import { Cog8ToothIcon } from '@heroicons/react/24/solid';
@@ -23,11 +23,21 @@ const WordleGame: React.FC<any> = () => {
   
   const [currentRow, setCurrentRow] = React.useState<Attempt>(defaultAttempt);
 
+  console.log('session', session);
+
   const handleKeyChange = async (char: string) => {
     if (KeyPressType.ENTER === char) {
       const curretGuess = currentRow.reduce((acc, curr) => acc + curr.letter, '');
       const sessionId = session?.sessionId as string;
+
+      if (curretGuess.length < 5) {
+        console.log('Please enter 5 letters');
+        return;
+      }
+
       const newSession = await submitGuess({ sessionId, guess: curretGuess });
+
+      console.log('newSession', newSession);
 
       if (newSession.status === STATUS.FAILED || newSession.status === STATUS.SUCCESS || newSession.status === STATUS.ENDED) {
         return;
@@ -56,6 +66,19 @@ const WordleGame: React.FC<any> = () => {
       setCurrentRow(newCurrentRow);
     }
   };
+
+  const refDiv = React.useRef<HTMLDivElement>(null);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    let char = e.key.toLowerCase();
+    if (char === 'backspace') {
+      char = KeyPressType.BACKSPACE;
+    }
+    const allowKeys = KEYS.flat().filter((item) => item !== '');
+    if (allowKeys.includes(char)) {
+      handleKeyChange(char);
+    }
+  }
   
   if (isLoading || !session) {
     return <div>Loading...</div>;
@@ -66,7 +89,12 @@ const WordleGame: React.FC<any> = () => {
   }
 
   return (
-    <div className='w-[100%] flex flex-col justify-center items-center'>
+    <div
+      className='w-[100%] flex flex-col justify-center items-center'
+      onMouseUp={() => {
+        refDiv.current?.focus();
+      }}
+    >
       <div className=' w-[100%] border-x-gray-200 border-2 shadow flex justify-between items-center mb-4 p-3'>
         <div className='font-bold text-3xl'>Wordle</div>
         <div className='flex items-center'>
@@ -83,14 +111,11 @@ const WordleGame: React.FC<any> = () => {
           })}
         </div>
 
-        <div className='w-[100%]'>
-          <VirtualKeyboard onKeyChange={handleKeyChange} />
+        <div ref={refDiv} tabIndex={-1} onKeyDown={handleKeyDown} className='w-[100%] outline-none'>
+          <VirtualKeyboard keyColors={session.keyboardColor || {}} onKeyChange={handleKeyChange} />
         </div>
 
         <HowToPlay onClose={() => setOpen(false)} open={open} />
-        <button disabled={isMutating} onClick={async() => {
-          // guessWord({ guess: 'abcde', sessionId: '659a6a70b093a499999dfe41' })
-        }}>Guess</button>
       </div>
     </div>
   );
