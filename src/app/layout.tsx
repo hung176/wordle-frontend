@@ -17,9 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={raleway.className} >
-        <div className="flex min-h-screen flex-col items-center justify-center text-black">
-          {children}
-        </div>
+        {children}
       </body>
     </html>
   )

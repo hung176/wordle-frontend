@@ -5,17 +5,17 @@ export function generateClassName(
 ): Attempt {
   const greenClass = "bg-wl-green border-wl-green text-white";
   const yellowClass = "bg-wl-yellow border-wl-yellow text-white";
-  const blackClass = "bg-wl-gray border-wl-gray text-white";
+  const grayClass = "bg-wl-gray border-wl-gray text-white";
 
-  return attempt.map(({ letter, position, green, yellow, black }) => ({
+  return attempt.map(({ letter, position, green, yellow, gray }) => ({
     letter,
     position,
     className: green
       ? greenClass
       : yellow
         ? yellowClass
-        : black
-          ? blackClass
+        : gray
+          ? grayClass
           : "",
   }));
 }

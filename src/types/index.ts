@@ -12,7 +12,7 @@ export type Letter = {
   position?: number;
   green?: boolean;
   yellow?: boolean;
-  black?: boolean;
+  gray?: boolean;
   className?: string;
 };
 
