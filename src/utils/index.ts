@@ -16,6 +16,8 @@ export function generateClassName(
         ? yellowClass
         : gray
           ? grayClass
-          : "",
+          : letter
+            ? "border-wl-gray"
+            : ""
   }));
 }

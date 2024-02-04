@@ -28,6 +28,6 @@ const KeyPress: React.FC<KeyPressProps> = ({ char, color, onClickKey }) => {
       {char}
     </div>
   );
-}
+};
 
 export default KeyPress;
