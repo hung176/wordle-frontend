@@ -3,16 +3,19 @@ import React from 'react';
 import VirtualKeyboard, { KEYS, KeyPressType } from '@/components/VirtualKeyboard';
 import Guess from '@/components/Guess';
 import HowToPlay from '@/components/HowToPlay';
-import { Cog8ToothIcon } from '@heroicons/react/24/solid';
-import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
+import { QuestionMarkCircleIcon, LightBulbIcon, Cog8ToothIcon, PowerIcon } from '@heroicons/react/24/outline';
 import useSession from '@/hooks/useSession';
-import { Attempt, STATUS, SessionType } from '@/types';
+import { Attempt, STATUS } from '@/types';
 import { useToast } from '../context/toast-provider';
 import Toast from '@/components/Toast';
+import Hint from '@/components/Hint';
+import EndSession from '@/components/EndSession';
 
 const WordleGame: React.FC<any> = () => {
-  const [open, setOpen] = React.useState<boolean>(false);
-  const { session, error, isLoading, mutateSession, isSubmittingGuess, submitGuess } = useSession();
+  const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
+  const [openHintModal, setOpenHintModal] = React.useState<boolean>(false);
+  const [openEndSessionModal, setOpenEndSessionModal] = React.useState<boolean>(false);
+  const { session, error, isLoading, mutateSession, isSubmittingGuess, submitGuess, endSession } = useSession();
   const toast = useToast();
   const currentIndexRow = session === undefined ? 0 : session?.attempts?.length;
 
@@ -28,8 +31,6 @@ const WordleGame: React.FC<any> = () => {
   const [currentRow, setCurrentRow] = React.useState<Attempt>(defaultAttempt);
 
   const refDiv = React.useRef<HTMLDivElement>(null);
-
-  console.log('errrrrrr', error);
 
   React.useEffect(() => {
     refDiv.current?.focus();
@@ -93,6 +94,20 @@ const WordleGame: React.FC<any> = () => {
     }
   };
 
+  const handleEndSession = async () => {
+    setOpenEndSessionModal(false);
+    const sessionId = session?.sessionId as string;
+    const sessionEnded = await endSession({ sessionId });
+    if (sessionEnded.status === STATUS.ENDED) {
+      const word = sessionEnded?.wordToGuess;
+      const wordSplit = word.split('');
+      const newCurrentRow = currentRow.map((item, idx) => {
+        return { ...item, letter: wordSplit[idx], green: true };
+      });
+      setCurrentRow(newCurrentRow);
+    }
+  };
+
   if (isLoading || !session) {
     return <div className="flex min-h-screen flex-col items-center justify-center">Loading...</div>;
   }
@@ -110,10 +125,20 @@ const WordleGame: React.FC<any> = () => {
     >
       <div className="w-[100%] flex flex-col justify-center items-center">
         <div className=" w-[100%] border-x-gray-200 border-2 shadow flex justify-between items-center mb-4 p-3">
+          <div className="flex items-center">
+            <PowerIcon
+              className="w-8 h-8 cursor-pointer mr-5 text-wl-gray"
+              onClick={() => setOpenEndSessionModal(true)}
+            />
+            <LightBulbIcon onClick={() => setOpenHintModal(true)} className="w-8 h-8 cursor-pointer text-wl-yellow" />
+          </div>
           <div className="font-bold text-3xl">Wordle</div>
           <div className="flex items-center">
-            <QuestionMarkCircleIcon onClick={() => setOpen(true)} className="w-8 h-8 cursor-pointer mr-5" />
-            <Cog8ToothIcon className="w-8 h-8 cursor-pointer" />
+            <QuestionMarkCircleIcon
+              onClick={() => setOpenHowToPlay(true)}
+              className="w-8 h-8 cursor-pointer mr-5 text-wl-green"
+            />
+            <Cog8ToothIcon className="w-8 h-8 cursor-pointer text-wl-gray" />
           </div>
         </div>
         <div className="w-[500px] h-auto flex flex-col justify-center items-center">
@@ -133,7 +158,15 @@ const WordleGame: React.FC<any> = () => {
             <VirtualKeyboard keyColors={session?.keyboardColor || {}} onKeyChange={handleKeyChange} />
           </div>
 
-          <HowToPlay onClose={() => setOpen(false)} open={open} />
+          <HowToPlay onClose={() => setOpenHowToPlay(false)} open={openHowToPlay} />
+
+          <Hint open={openHintModal} onClose={() => setOpenHintModal(false)} />
+
+          <EndSession
+            open={openEndSessionModal}
+            onClose={() => setOpenEndSessionModal(false)}
+            onEndSession={handleEndSession}
+          />
         </div>
       </div>
     </div>
