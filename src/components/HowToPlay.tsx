@@ -1,7 +1,7 @@
 import React from 'react';
 import Letter from './Letter';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import Modal from './Modal';
+import Modal from './common/Modal';
 
 interface HowToPlayProps {
   open: boolean;

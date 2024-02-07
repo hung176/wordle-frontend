@@ -2,7 +2,7 @@
 import { GUESS_API_URL } from '@/hooks/useSession';
 import { SWRConfig } from 'swr';
 import { useToast } from './toast-provider';
-import Toast from '@/components/Toast';
+import Toast from '@/components/common/Toast';
 
 const SWRConfigProvider = ({ children }: { children: React.ReactNode }) => {
   const toast = useToast();

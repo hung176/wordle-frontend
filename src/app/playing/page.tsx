@@ -3,17 +3,16 @@ import React from 'react';
 import VirtualKeyboard, { KEYS, KeyPressType } from '@/components/VirtualKeyboard';
 import Guess from '@/components/Guess';
 import HowToPlay from '@/components/HowToPlay';
-import { QuestionMarkCircleIcon, LightBulbIcon, Cog8ToothIcon, PowerIcon } from '@heroicons/react/24/outline';
+import { QuestionMarkCircleIcon, Cog8ToothIcon, PowerIcon } from '@heroicons/react/24/outline';
 import useSession from '@/hooks/useSession';
 import { Attempt, STATUS } from '@/types';
 import { useToast } from '../context/toast-provider';
-import Toast from '@/components/Toast';
-import Hint from '@/components/Hint';
-import EndSession from '@/components/EndSession';
+import Toast from '@/components/common/Toast';
+import PopoverHint from '@/components/common/PopoverHint';
+import EndSession from '@/components/common/EndSession';
 
 const WordleGame: React.FC<any> = () => {
   const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
-  const [openHintModal, setOpenHintModal] = React.useState<boolean>(false);
   const [openEndSessionModal, setOpenEndSessionModal] = React.useState<boolean>(false);
   const { session, error, isLoading, mutateSession, isSubmittingGuess, submitGuess, endSession } = useSession();
   const toast = useToast();
@@ -108,6 +107,8 @@ const WordleGame: React.FC<any> = () => {
     }
   };
 
+  const handleRevealOneLetter = (letter: string) => {};
+
   if (isLoading || !session) {
     return <div className="flex min-h-screen flex-col items-center justify-center">Loading...</div>;
   }
@@ -130,7 +131,7 @@ const WordleGame: React.FC<any> = () => {
               className="w-8 h-8 cursor-pointer mr-5 text-wl-gray"
               onClick={() => setOpenEndSessionModal(true)}
             />
-            <LightBulbIcon onClick={() => setOpenHintModal(true)} className="w-8 h-8 cursor-pointer text-wl-yellow" />
+            <PopoverHint session={session} />
           </div>
           <div className="font-bold text-3xl">Wordle</div>
           <div className="flex items-center">
@@ -159,8 +160,6 @@ const WordleGame: React.FC<any> = () => {
           </div>
 
           <HowToPlay onClose={() => setOpenHowToPlay(false)} open={openHowToPlay} />
-
-          <Hint open={openHintModal} onClose={() => setOpenHintModal(false)} />
 
           <EndSession
             open={openEndSessionModal}

@@ -26,6 +26,7 @@ export type SessionType = {
   attempts: Attempt[];
   status: STATUS;
   keyboardColor: KeyboardColor;
+  hints: string[];
 };
 
 export type KeyboardColor = {
