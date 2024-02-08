@@ -1,11 +1,10 @@
-import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 
 export const HINTS_API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/hint`;
 
-const fetchHints = async (url: string, { arg }: { arg: { sessionId: string } }) => {
+const fetchHint = async (url: string, { arg }: { arg: { sessionId: string } }) => {
   const res = await fetch(url, {
-    method: "PUT",
+    method: "POST",
     headers: {
       accept: "application/json",
       "content-type": "application/json",
@@ -18,15 +17,16 @@ const fetchHints = async (url: string, { arg }: { arg: { sessionId: string } }) 
     throw error
   }
 
-  return;
+  return await res.text();
 };
 
-export const useHints = () => {
-  const { error, trigger, isMutating } = useSWRMutation(HINTS_API_URL, fetchHints);
+export const useHint = () => {
+  const { data, error, trigger, isMutating } = useSWRMutation(HINTS_API_URL, fetchHint);
 
   return {
+    hint: data,
     isError: error,
-    hintTrigger: trigger,
+    generateHint: trigger,
     isMutating,
   };
 };

@@ -131,7 +131,7 @@ const WordleGame: React.FC<any> = () => {
               className="w-8 h-8 cursor-pointer mr-5 text-wl-gray"
               onClick={() => setOpenEndSessionModal(true)}
             />
-            <PopoverHint session={session} />
+            <PopoverHint sessionId={session?.sessionId} prevHints={session.hints} />
           </div>
           <div className="font-bold text-3xl">Wordle</div>
           <div className="flex items-center">
