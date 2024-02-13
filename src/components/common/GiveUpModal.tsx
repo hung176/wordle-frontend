@@ -7,7 +7,7 @@ interface EndSessionProps {
   onEndSession: () => void;
 }
 
-const EndSession: React.FC<EndSessionProps> = ({ open, onClose, onEndSession }) => {
+const GiveUpModal: React.FC<EndSessionProps> = ({ open, onClose, onEndSession }) => {
   return (
     <Modal isOpen={open} onClose={onClose}>
       <p className="mb-2">Are you sure you want to end the session?</p>
@@ -23,4 +23,4 @@ const EndSession: React.FC<EndSessionProps> = ({ open, onClose, onEndSession }) 
   );
 };
 
-export default EndSession;
+export default GiveUpModal;

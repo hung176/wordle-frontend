@@ -1,79 +1,84 @@
-import useSWRMutation from "swr/mutation";
-import type { SessionType } from "../types/index";
-import useSWR from "swr";
+import React from 'react';
+import useSWRMutation from 'swr/mutation';
+import type { SessionType } from '../types/index';
+import useSWR from 'swr';
+import { useLocalStorage } from './useLocalStorage';
 
 export const START_API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/start`;
 export const GUESS_API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/guess`;
 export const END_API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/end`;
 
-export const fetchSession = async (url: string, body: { userId: string }) => {
+export const fetchSession = async (url: string, body: { sessionId: string | null | undefined }) => {
   const res = await fetch(url, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      accept: "application/json",
-      "content-type": "application/json",
+      accept: 'application/json',
+      'content-type': 'application/json',
     },
-    body: JSON.stringify(body),
+    body: body.sessionId && JSON.stringify(body),
   });
 
   if (!res.ok) {
-    const error = new Error('An error occurred while fetching the data.')
-    throw error
+    const error = new Error('An error occurred while fetching the data.');
+    throw error;
   }
 
   return await res.json();
-}
+};
 
-
-async function guessFetcher(
-  url: string,
-  { arg }: { arg: { guess: string; sessionId: string } }
-) {
+async function guessFetcher(url: string, { arg }: { arg: { guess: string; sessionId: string } }) {
   const res = await fetch(url, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      accept: "application/json",
-      "content-type": "application/json",
+      accept: 'application/json',
+      'content-type': 'application/json',
     },
     body: JSON.stringify(arg),
   });
 
   if (!res.ok) {
     const errorRes = await res.json();
+    console.log(errorRes);
     const error = new Error(errorRes.message);
-    throw error
+    throw error;
   }
 
   return await res.json();
 }
 
-const endSessionFetcher = async (
-  url: string,
-  { arg }: { arg: { sessionId: string } }) => {
+const endSessionFetcher = async (url: string, { arg }: { arg: { sessionId: string } }) => {
   const res = await fetch(url, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      accept: "application/json",
-      "content-type": "application/json",
+      accept: 'application/json',
+      'content-type': 'application/json',
     },
     body: JSON.stringify(arg),
   });
 
   if (!res.ok) {
-    const error = new Error('An error occurred while ending the session.')
-    throw error
+    const error = new Error('An error occurred while ending the session.');
+    throw error;
   }
 
   return await res.json();
 };
 
 export default function useSession() {
-  const userId = "659a6a70b093a499999dfe3b";
-  const { data, error, mutate, isLoading } = useSWR<SessionType>(START_API_URL, (url: string) => fetchSession(url, { userId }));
+  const [sessionId, saveSessionId] = useLocalStorage<string | null>('sessionId', null);
+
+  const { data, error, mutate, isLoading } = useSWR<SessionType>(START_API_URL, (url: string) =>
+    fetchSession(url, { sessionId })
+  );
 
   const { trigger: submitGuess, isMutating } = useSWRMutation(GUESS_API_URL, guessFetcher);
-
   const { trigger: endSession } = useSWRMutation(END_API_URL, endSessionFetcher);
+
+  React.useEffect(() => {
+    if (data?.sessionId) {
+      saveSessionId(data.sessionId);
+    }
+  }, [data]);
 
   return {
     session: data,
@@ -83,5 +88,5 @@ export default function useSession() {
     submitGuess,
     isSubmittingGuess: isMutating,
     endSession,
-  }
+  };
 }
