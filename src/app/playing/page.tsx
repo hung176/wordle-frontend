@@ -3,7 +3,7 @@ import React from 'react';
 import VirtualKeyboard, { KEYS, KeyPressType } from '@/components/VirtualKeyboard';
 import Guess from '@/components/Guess';
 import HowToPlay from '@/components/HowToPlay';
-import { QuestionMarkCircleIcon, Cog8ToothIcon, PowerIcon } from '@heroicons/react/24/outline';
+import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import useSession from '@/hooks/useSession';
 import { Attempt, STATUS } from '@/types';
 import { useToast } from '../context/toast-provider';
@@ -11,14 +11,16 @@ import Toast from '@/components/common/Toast';
 import GiveUpModal from '@/components/common/GiveUpModal';
 import Hint from '@/components/common/Hint';
 import GameEnd from '@/components/GameEnd';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
+import SettingButton from '@/components/common/SettingButton';
 
 const WordleGame: React.FC<any> = () => {
   const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
   const [openEndSessionModal, setOpenEndSessionModal] = React.useState<boolean>(false);
+  const [isFlipped, setIsFlipped] = React.useState<boolean>(false);
   const { session, error, isLoading, mutateSession, isSubmittingGuess, submitGuess, endSession } = useSession();
   const toast = useToast();
   const currentIndexRow = session === undefined ? 0 : session?.attempts?.length;
+  const prevIndexRow = currentIndexRow - 1 > 0 ? currentIndexRow - 1 : 0;
 
   const defaultAttempt: Attempt = Array(5)
     .fill({ letter: '', className: '' })
@@ -60,7 +62,8 @@ const WordleGame: React.FC<any> = () => {
         return;
       }
 
-      mutateSession({ ...newSession });
+      await mutateSession({ ...newSession });
+      setIsFlipped(true);
       setCurrentRow(defaultAttempt);
     } else if (KeyPressType.BACKSPACE === char) {
       const newCurrentRow = [...currentRow];
@@ -145,13 +148,19 @@ const WordleGame: React.FC<any> = () => {
           <div className="font-bold text-3xl text-center">Wordle</div>
           <div className="w-[350px] flex justify-end items-center">
             <QuestionMarkCircleIcon onClick={() => setOpenHowToPlay(true)} className="w-8 h-8 cursor-pointer mr-5" />
-            <Cog8ToothIcon className="w-8 h-8 cursor-pointer text-wl-gray" />
+            <SettingButton onClick={() => console.log('setting button')} />
           </div>
         </div>
         <div className="w-[500px] h-auto flex flex-col justify-center items-center">
           <div className="h-96 mb-5 flex flex-col justify-between">
             {rows.map((row, idx) => {
-              return <Guess key={idx} attempt={currentIndexRow === idx ? currentRow : row} />;
+              return (
+                <Guess
+                  key={idx}
+                  attempt={currentIndexRow === idx ? currentRow : row}
+                  isFlipped={prevIndexRow === idx ? isFlipped : false}
+                />
+              );
             })}
           </div>
 
