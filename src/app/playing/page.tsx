@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { motion } from 'framer-motion';
 import VirtualKeyboard, { KEYS, KeyPressType } from '@/components/VirtualKeyboard';
 import Guess from '@/components/Guess';
 import HowToPlay from '@/components/HowToPlay';
@@ -41,10 +42,10 @@ const WordleGame: React.FC<any> = () => {
 
   const handleKeyChange = async (char: string) => {
     if (KeyPressType.ENTER === char) {
-      const curretGuess = currentRow.reduce((acc, curr) => acc + curr.letter, '');
+      const currentGuess = currentRow.reduce((acc, curr) => acc + curr.letter, '');
       const sessionId = session?.sessionId as string;
 
-      if (curretGuess.length < 5) {
+      if (currentGuess.length < 5) {
         toast.open({
           component: <Toast message="Please enter 5 letters" />,
           timeout: 5000,
@@ -52,7 +53,7 @@ const WordleGame: React.FC<any> = () => {
         return;
       }
 
-      const newSession = await submitGuess({ guess: curretGuess, sessionId });
+      const newSession = await submitGuess({ guess: currentGuess, sessionId });
 
       if (
         newSession.status === STATUS.FAILED ||
@@ -112,7 +113,7 @@ const WordleGame: React.FC<any> = () => {
     }
   };
 
-  const isGameEnded =
+  const isGameCompleted =
     session?.status === STATUS.ENDED || session?.status === STATUS.SUCCESS || session?.status === STATUS.FAILED;
 
   if (isLoading || !session) {
@@ -123,7 +124,7 @@ const WordleGame: React.FC<any> = () => {
     return <div className="flex min-h-screen flex-col items-center justify-center">Something went wrong...</div>;
   }
 
-  if (isGameEnded) {
+  if (isGameCompleted) {
     return <GameEnd wordToGuess={session.wordToGuess} />;
   }
 
@@ -147,7 +148,16 @@ const WordleGame: React.FC<any> = () => {
           </div>
           <div className="font-bold text-3xl text-center">Wordle</div>
           <div className="w-[350px] flex justify-end items-center">
-            <QuestionMarkCircleIcon onClick={() => setOpenHowToPlay(true)} className="w-8 h-8 cursor-pointer mr-5" />
+            <motion.div
+              initial="rest"
+              variants={{
+                rest: { y: 0 },
+                hover: { y: [0, -5, 0], transition: { repeat: Infinity, duration: 0.6 } },
+              }}
+              whileHover="hover"
+            >
+              <QuestionMarkCircleIcon onClick={() => setOpenHowToPlay(true)} className="w-8 h-8 cursor-pointer mr-5" />
+            </motion.div>
             <SettingButton onClick={() => console.log('setting button')} />
           </div>
         </div>

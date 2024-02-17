@@ -18,6 +18,7 @@ const Guess: React.FC<GuessProps> = ({ attempt, isFlipped }) => {
           key={position}
           letter={letter}
           isFlipped={isFlipped}
+          isScale={letter !== ''}
           delay={idx * 0.5}
           className={`w-14 h-14 p-7 ${className}`}
           styles={styles}
