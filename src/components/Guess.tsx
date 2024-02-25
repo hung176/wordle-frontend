@@ -15,8 +15,6 @@ interface GuessProps {
 }
 
 const Guess: React.FC<GuessProps> = ({ attempt, isRowFlipped, incrementIndex }) => {
-  // const [isFlipEnd, setIsFlipEnd] = React.useState<boolean>(false);
-
   return (
     <div className="w-80 flex items-center justify-between">
       {attempt.map(({ letter, position, green, yellow, gray, animation }, idx) => {

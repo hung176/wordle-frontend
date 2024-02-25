@@ -12,8 +12,8 @@ const GameEnd: React.FC<{ wordToGuess: string }> = ({ wordToGuess = '' }) => {
         <div className="flex justify-center items-center">
           {wordToGuess.split('').map((letter, idx) => {
             return (
-              <div key={`${letter}-${idx}`} className=" w-6 h-6 p-5 mr-1">
-                <Letter letter={letter} className="bg-wl-green border-wl-green text-white" />
+              <div key={`${letter}-${idx}`} className="mr-1">
+                <Letter letter={letter} tw="bg-wl-green border-wl-green text-white w-8 h-8 p-5" />
               </div>
             );
           })}

@@ -45,7 +45,7 @@ const WordleGame: React.FC<any> = () => {
   });
 
   React.useEffect(() => {
-    if (session && session?.attempts?.length !== currentRow.rowIndex) {
+    if (session && session.attempts.length !== currentRow.rowIndex) {
       setCurrentRow({ ...currentRow, rowIndex: session.attempts.length });
     }
   }, [session]);
