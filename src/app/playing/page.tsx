@@ -6,7 +6,7 @@ import Guess from '@/components/Guess';
 import HowToPlay from '@/components/HowToPlay';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import useSession from '@/hooks/useSession';
-import { Attempt, STATUS } from '@/types';
+import { Attempt, LetterAnimationType, STATUS } from '@/types';
 import { useToast } from '../context/toast-provider';
 import Toast from '@/components/common/Toast';
 import GiveUpModal from '@/components/common/GiveUpModal';
@@ -17,22 +17,26 @@ import SettingButton from '@/components/common/SettingButton';
 const WordleGame: React.FC<any> = () => {
   const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
   const [openEndSessionModal, setOpenEndSessionModal] = React.useState<boolean>(false);
-  const [isFlipped, setIsFlipped] = React.useState<boolean>(false);
-  const { session, error, isLoading, mutateSession, isSubmittingGuess, submitGuess, endSession } = useSession();
+
+  const { session, error, isLoading, mutateSession, submitGuess, endSession } = useSession();
   const toast = useToast();
-  const currentIndexRow = session === undefined ? 0 : session?.attempts?.length;
-  const prevIndexRow = currentIndexRow - 1 > 0 ? currentIndexRow - 1 : 0;
 
   const defaultAttempt: Attempt = Array(5)
-    .fill({ letter: '', className: '' })
+    .fill({ letter: '', animation: undefined })
     .map((item, idx) => ({ ...item, position: idx }));
 
-  const generateRow = (pos: number) => session?.attempts[pos] || defaultAttempt;
+  const generateRow = (idx: number) => {
+    if (session && session.attempts && Array.isArray(session.attempts[idx])) {
+      return session.attempts[idx];
+    }
+    return defaultAttempt;
+  };
   const rows = Array(6)
     .fill(0)
     .map((_, idx) => generateRow(idx));
 
-  const [currentRow, setCurrentRow] = React.useState<Attempt>(defaultAttempt);
+  const [currentRow, setCurrentRow] = React.useState({ row: defaultAttempt, rowIndex: 0 });
+  const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
 
   const refDiv = React.useRef<HTMLDivElement>(null);
 
@@ -40,9 +44,15 @@ const WordleGame: React.FC<any> = () => {
     refDiv.current?.focus();
   });
 
+  React.useEffect(() => {
+    if (session && session?.attempts?.length !== currentRow.rowIndex) {
+      setCurrentRow({ ...currentRow, rowIndex: session.attempts.length });
+    }
+  }, [session]);
+
   const handleKeyChange = async (char: string) => {
     if (KeyPressType.ENTER === char) {
-      const currentGuess = currentRow.reduce((acc, curr) => acc + curr.letter, '');
+      const currentGuess = currentRow.row.reduce((acc, curr) => acc + curr.letter, '');
       const sessionId = session?.sessionId as string;
 
       if (currentGuess.length < 5) {
@@ -55,6 +65,10 @@ const WordleGame: React.FC<any> = () => {
 
       const newSession = await submitGuess({ guess: currentGuess, sessionId });
 
+      const newCurrentRow = newSession.attempts[newSession.attempts.length - 1];
+      setCurrentRow({ ...currentRow, row: newCurrentRow });
+      setIsSubmitting(true);
+
       if (
         newSession.status === STATUS.FAILED ||
         newSession.status === STATUS.SUCCESS ||
@@ -62,12 +76,8 @@ const WordleGame: React.FC<any> = () => {
       ) {
         return;
       }
-
-      await mutateSession({ ...newSession });
-      setIsFlipped(true);
-      setCurrentRow(defaultAttempt);
     } else if (KeyPressType.BACKSPACE === char) {
-      const newCurrentRow = [...currentRow];
+      const newCurrentRow = [...currentRow.row];
       let findEmpty = newCurrentRow.findIndex((item) => item.letter === '');
       if (findEmpty === -1) {
         findEmpty = newCurrentRow.length;
@@ -75,16 +85,18 @@ const WordleGame: React.FC<any> = () => {
       if (findEmpty === 0) {
         return;
       }
-      newCurrentRow[findEmpty - 1] = { ...newCurrentRow[findEmpty - 1], letter: '' };
-      setCurrentRow(newCurrentRow);
+      newCurrentRow[findEmpty - 1] = { ...newCurrentRow[findEmpty - 1], letter: '', animation: undefined };
+      setCurrentRow({ ...currentRow, row: newCurrentRow });
+      setIsSubmitting(false);
     } else {
-      const newCurrentRow = [...currentRow];
+      const newCurrentRow = [...currentRow.row];
       const findEmpty = newCurrentRow.findIndex((item) => item.letter === '');
       if (findEmpty === -1) {
         return;
       }
-      newCurrentRow[findEmpty] = { ...newCurrentRow[findEmpty], letter: char };
-      setCurrentRow(newCurrentRow);
+      newCurrentRow[findEmpty] = { ...newCurrentRow[findEmpty], letter: char, animation: LetterAnimationType.TYPING };
+      setCurrentRow({ ...currentRow, row: newCurrentRow });
+      setIsSubmitting(false);
     }
   };
 
@@ -106,11 +118,17 @@ const WordleGame: React.FC<any> = () => {
     if (sessionEnded.status === STATUS.ENDED) {
       const word = sessionEnded?.wordToGuess;
       const wordSplit = word.split('');
-      const newCurrentRow = currentRow.map((item, idx) => {
+      const newCurrentRow = currentRow.row.map((item, idx) => {
         return { ...item, letter: wordSplit[idx], green: true };
       });
-      setCurrentRow(newCurrentRow);
+      setCurrentRow({ ...currentRow, row: newCurrentRow });
     }
+  };
+
+  const handleIncrementIndex = async () => {
+    await mutateSession();
+    setCurrentRow({ row: defaultAttempt, rowIndex: currentRow.rowIndex + 1 });
+    setIsSubmitting(false);
   };
 
   const isGameCompleted =
@@ -167,8 +185,9 @@ const WordleGame: React.FC<any> = () => {
               return (
                 <Guess
                   key={idx}
-                  attempt={currentIndexRow === idx ? currentRow : row}
-                  isFlipped={prevIndexRow === idx ? isFlipped : false}
+                  attempt={currentRow.rowIndex === idx ? currentRow.row : row}
+                  isRowFlipped={currentRow.rowIndex === idx && isSubmitting}
+                  incrementIndex={handleIncrementIndex}
                 />
               );
             })}

@@ -57,7 +57,7 @@ const HowToPlay: React.FC<HowToPlayProps> = ({ open, onClose }) => {
           <div className="mb-4">
             <div className="flex items-center mb-1">
               {EXAMPLE_ONE.map(({ letter, style }, index) => (
-                <Letter key={index} letter={letter} className={`w-6 h-6 p-5 mr-1 ${style}`} />
+                <Letter key={index} letter={letter} tw={`mr-1 w-8 h-8 p-5 ${style}`} />
               ))}
             </div>
             <div>
@@ -68,7 +68,7 @@ const HowToPlay: React.FC<HowToPlayProps> = ({ open, onClose }) => {
           <div className="mb-4">
             <div className="flex items-center mb-1">
               {EXAMPLE_TWO.map(({ letter, style }, index) => (
-                <Letter key={index} letter={letter} className={`w-6 h-6 p-5 mr-1 ${style}`} />
+                <Letter key={index} letter={letter} tw={`mr-1 w-8 h-8 p-5 ${style}`} />
               ))}
             </div>
             <div>
@@ -79,7 +79,7 @@ const HowToPlay: React.FC<HowToPlayProps> = ({ open, onClose }) => {
           <div>
             <div className="flex items-center mb-1">
               {EXAMPLE_THREE.map(({ letter, style }, index) => (
-                <Letter key={index} letter={letter} className={`w-6 h-6 p-5 mr-1 ${style}`} />
+                <Letter key={index} letter={letter} tw={`mr-1 w-8 h-8 p-5 ${style}`} />
               ))}
             </div>
             <div>

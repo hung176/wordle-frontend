@@ -67,11 +67,17 @@ const endSessionFetcher = async (url: string, { arg }: { arg: { sessionId: strin
 export default function useSession() {
   const [sessionId, saveSessionId] = useLocalStorage<string | null>('sessionId', null);
 
-  const { data, error, mutate, isLoading } = useSWR<SessionType>(START_API_URL, (url: string) =>
-    fetchSession(url, { sessionId })
-  );
+  const {
+    data,
+    error: loadSessionError,
+    mutate,
+    isLoading,
+    isValidating,
+  } = useSWR<SessionType>(START_API_URL, (url: string) => fetchSession(url, { sessionId }), {
+    revalidateOnFocus: false,
+  });
 
-  const { trigger: submitGuess, isMutating } = useSWRMutation(GUESS_API_URL, guessFetcher);
+  const { trigger: submitGuess, isMutating, error: submitError } = useSWRMutation(GUESS_API_URL, guessFetcher);
   const { trigger: endSession } = useSWRMutation(END_API_URL, endSessionFetcher);
 
   React.useEffect(() => {
@@ -83,7 +89,9 @@ export default function useSession() {
   return {
     session: data,
     isLoading,
-    error,
+    isValidating,
+    error: loadSessionError,
+    submitError,
     mutateSession: mutate,
     submitGuess,
     isSubmittingGuess: isMutating,

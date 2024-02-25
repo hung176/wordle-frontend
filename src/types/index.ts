@@ -1,10 +1,16 @@
 export enum STATUS {
-  PLAYING = "PLAYING",
-  SUCCESS = "SUCCESS",
+  PLAYING = 'PLAYING',
+  SUCCESS = 'SUCCESS',
   // FAILED means the user has no attempt remaining
-  FAILED = "FAILED",
+  FAILED = 'FAILED',
   // ENDED means the session is expired or user end the game
-  ENDED = "ENDED",
+  ENDED = 'ENDED',
+}
+
+export enum LetterAnimationType {
+  FLIP,
+  TYPING,
+  INITIAL,
 }
 
 export type Letter = {
@@ -13,7 +19,7 @@ export type Letter = {
   green?: boolean;
   yellow?: boolean;
   gray?: boolean;
-  className?: string;
+  animation?: LetterAnimationType;
 };
 
 export type Attempt = Letter[];
