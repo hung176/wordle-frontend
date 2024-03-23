@@ -18,3 +18,7 @@
     @apply text-blue-600 underline;
   }
 }
+
+nextjs-portal {
+  display: none;
+}

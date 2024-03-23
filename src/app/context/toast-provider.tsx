@@ -18,17 +18,16 @@ export const ToastContext = React.createContext<ToastContextProps>({
 export const useToast = () => React.useContext(ToastContext);
 
 export default function ToastProvider({ children }: { children: React.ReactNode }) {
-  const [toasts, setToasts] = React.useState<{ id: number; component: ReactElement }[]>([]);
+  const [toast, setToast] = React.useState<{ component: ReactElement } | null>(null);
 
   const open = ({ component, timeout = 3000 }: ToastOpenProps) => {
-    const id = Math.random();
-    setToasts([...toasts, { id, component }]);
+    setToast({ component });
     setTimeout(() => {
-      close(id);
+      close();
     }, timeout);
   };
-  const close = (id: number) => {
-    setToasts(toasts.filter((toast) => toast.id !== id));
+  const close = () => {
+    setToast(null);
   };
 
   return (
@@ -39,10 +38,8 @@ export default function ToastProvider({ children }: { children: React.ReactNode 
       }}
     >
       {children}
-      <div className="absolute top-1/4 right-[50%] translate-x-[50%] translate-y-[-50%]">
-        {toasts.map((toast) => (
-          <div key={toast.id}>{toast.component}</div>
-        ))}
+      <div className="absolute top-1/2 right-[50%] translate-x-[50%] translate-y-[-50%]">
+        <div>{toast?.component}</div>
       </div>
     </ToastContext.Provider>
   );
