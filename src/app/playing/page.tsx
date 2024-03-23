@@ -18,7 +18,7 @@ const WordleGame: React.FC<any> = () => {
   const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
   const [openEndSessionModal, setOpenEndSessionModal] = React.useState<boolean>(false);
 
-  const { session, error, isLoading, mutateSession, submitGuess, endSession } = useSession();
+  const { session, error, isLoading, mutate, submitGuess, endSession } = useSession();
   const toast = useToast();
 
   const defaultAttempt: Attempt = Array(5)
@@ -45,8 +45,8 @@ const WordleGame: React.FC<any> = () => {
   });
 
   React.useEffect(() => {
-    if (session && session.attempts.length !== currentRow.rowIndex) {
-      setCurrentRow({ ...currentRow, rowIndex: session.attempts.length });
+    if (session && session?.attempts.length !== currentRow.rowIndex) {
+      setCurrentRow({ ...currentRow, rowIndex: session?.attempts.length });
     }
   }, [session]);
 
@@ -111,7 +111,7 @@ const WordleGame: React.FC<any> = () => {
     }
   };
 
-  const handleEndSession = async () => {
+  const handleGiveUp = async () => {
     setOpenEndSessionModal(false);
     const sessionId = session?.sessionId as string;
     const sessionEnded = await endSession({ sessionId });
@@ -126,7 +126,7 @@ const WordleGame: React.FC<any> = () => {
   };
 
   const handleIncrementIndex = async () => {
-    await mutateSession();
+    await mutate();
     setCurrentRow({ row: defaultAttempt, rowIndex: currentRow.rowIndex + 1 });
     setIsSubmitting(false);
   };
@@ -143,7 +143,7 @@ const WordleGame: React.FC<any> = () => {
   }
 
   if (isGameCompleted) {
-    return <GameEnd wordToGuess={session.wordToGuess} />;
+    return <GameEnd wordToGuess={session.wordToGuess} status={session?.status} />;
   }
 
   return (
@@ -199,11 +199,7 @@ const WordleGame: React.FC<any> = () => {
 
           <HowToPlay onClose={() => setOpenHowToPlay(false)} open={openHowToPlay} />
 
-          <GiveUpModal
-            open={openEndSessionModal}
-            onClose={() => setOpenEndSessionModal(false)}
-            onEndSession={handleEndSession}
-          />
+          <GiveUpModal open={openEndSessionModal} onClose={() => setOpenEndSessionModal(false)} giveUp={handleGiveUp} />
         </div>
       </div>
     </div>

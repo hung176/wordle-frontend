@@ -15,7 +15,7 @@ export const fetchSession = async (url: string, body: { sessionId: string | null
       accept: 'application/json',
       'content-type': 'application/json',
     },
-    body: body.sessionId && JSON.stringify(body),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) {
@@ -38,7 +38,6 @@ async function guessFetcher(url: string, { arg }: { arg: { guess: string; sessio
 
   if (!res.ok) {
     const errorRes = await res.json();
-    console.log(errorRes);
     const error = new Error(errorRes.message);
     throw error;
   }
@@ -64,21 +63,28 @@ const endSessionFetcher = async (url: string, { arg }: { arg: { sessionId: strin
   return await res.json();
 };
 
+async function startNewSession(url: string) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({ sessionId: null }),
+  });
+  return await res.json();
+}
+
 export default function useSession() {
   const [sessionId, saveSessionId] = useLocalStorage<string | null>('sessionId', null);
 
-  const {
-    data,
-    error: loadSessionError,
-    mutate,
-    isLoading,
-    isValidating,
-  } = useSWR<SessionType>(START_API_URL, (url: string) => fetchSession(url, { sessionId }), {
+  const { data, error, mutate, isLoading } = useSWR(START_API_URL, (url: string) => fetchSession(url, { sessionId }), {
     revalidateOnFocus: false,
   });
 
-  const { trigger: submitGuess, isMutating, error: submitError } = useSWRMutation(GUESS_API_URL, guessFetcher);
+  const { trigger: submitGuess } = useSWRMutation(GUESS_API_URL, guessFetcher);
   const { trigger: endSession } = useSWRMutation(END_API_URL, endSessionFetcher);
+  const { trigger: startNewGame } = useSWRMutation(START_API_URL, startNewSession);
 
   React.useEffect(() => {
     if (data?.sessionId) {
@@ -89,12 +95,10 @@ export default function useSession() {
   return {
     session: data,
     isLoading,
-    isValidating,
-    error: loadSessionError,
-    submitError,
-    mutateSession: mutate,
+    error,
+    mutate,
     submitGuess,
-    isSubmittingGuess: isMutating,
     endSession,
+    startNewGame,
   };
 }
