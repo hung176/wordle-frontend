@@ -3,7 +3,7 @@ export enum STATUS {
   SUCCESS = 'SUCCESS',
   // FAILED means the user has no attempt remaining
   FAILED = 'FAILED',
-  // ENDED means the session is expired or user end the game
+  // ENDED means the session is expired or user give up
   ENDED = 'ENDED',
 }
 
@@ -20,14 +20,13 @@ export type Letter = {
   green?: boolean;
   yellow?: boolean;
   gray?: boolean;
-  animation?: LetterAnimationType;
 };
 
 export type Attempt = Letter[];
 
 export type SessionType = {
   sessionId: string;
-  userId: string;
+  // userId: string;
   wordToGuess: string;
   attemptsRemaining: number;
   attempts: Attempt[];

@@ -5,15 +5,14 @@ import VirtualKeyboard, { KEYS, KeyPressType } from '@/components/VirtualKeyboar
 import Guess from '@/components/Guess';
 import HowToPlay from '@/components/HowToPlay';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
-import useSession, { GUESS_API_URL } from '@/hooks/useSession';
-import { Attempt, LetterAnimationType, STATUS } from '@/types';
+import useSession from '@/hooks/useSession';
+import { Attempt, STATUS } from '@/types';
 import { useToast } from '../context/toast-provider';
 import Toast from '@/components/common/Toast';
 import GiveUpModal from '@/components/common/GiveUpModal';
 import Hint from '@/components/common/Hint';
 import GameEnd from '@/components/GameEnd';
 import SettingButton from '@/components/common/SettingButton';
-import { useSWRConfig } from 'swr';
 import { usePrevious } from '@/hooks/usePrevious';
 
 const WordleGame: React.FC<any> = () => {
@@ -24,7 +23,7 @@ const WordleGame: React.FC<any> = () => {
   const toast = useToast();
 
   const defaultAttempt: Attempt = Array(5)
-    .fill({ letter: '', animation: undefined })
+    .fill({ letter: '' })
     .map((item, idx) => ({ ...item, position: idx }));
 
   const generateRow = (idx: number) => {
@@ -39,9 +38,9 @@ const WordleGame: React.FC<any> = () => {
 
   const [currentRow, setCurrentRow] = React.useState({ row: defaultAttempt, rowIndex: 0 });
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
-  const [isValidWord, setIsValidWord] = React.useState<boolean>(true);
+  const [isValidWord, setIsValidWord] = React.useState<boolean | null>(null);
+  const [isTyping, setIsTyping] = React.useState<boolean>(false);
   const previousRow = usePrevious(currentRow);
-  console.log(currentRow);
 
   const refDiv = React.useRef<HTMLDivElement>(null);
 
@@ -52,12 +51,13 @@ const WordleGame: React.FC<any> = () => {
   React.useEffect(() => {
     if (session && session?.attempts.length !== currentRow.rowIndex) {
       setCurrentRow({ ...currentRow, rowIndex: session?.attempts.length });
-      setIsValidWord(true);
+      setIsValidWord(null);
     }
   }, [session]);
 
   const handleKeyChange = async (char: string) => {
     if (KeyPressType.ENTER === char) {
+      setIsTyping(false);
       if (isSubmitting || isMutating || isValidating) {
         return;
       }
@@ -65,9 +65,6 @@ const WordleGame: React.FC<any> = () => {
       const currentGuess = currentRow.row.reduce((acc, curr) => acc + curr.letter, '');
       const previousGuess = previousRow?.row.reduce((acc, curr) => acc + curr.letter, '');
       const sessionId = session?.sessionId as string;
-
-      console.log('currentGuess', currentGuess);
-      console.log('previousGuess', previousGuess);
 
       if (currentGuess.length < 5) {
         toast.open({
@@ -104,6 +101,8 @@ const WordleGame: React.FC<any> = () => {
         return;
       }
     } else if (KeyPressType.BACKSPACE === char) {
+      setIsTyping(false);
+      setIsValidWord(null);
       const newCurrentRow = [...currentRow.row];
       let findEmpty = newCurrentRow.findIndex((item) => item.letter === '');
       if (findEmpty === -1) {
@@ -112,16 +111,18 @@ const WordleGame: React.FC<any> = () => {
       if (findEmpty === 0) {
         return;
       }
-      newCurrentRow[findEmpty - 1] = { ...newCurrentRow[findEmpty - 1], letter: '', animation: undefined };
+      newCurrentRow[findEmpty - 1] = { ...newCurrentRow[findEmpty - 1], letter: '' };
       setCurrentRow({ ...currentRow, row: newCurrentRow });
       setIsSubmitting(false);
     } else {
+      setIsTyping(true);
+      setIsValidWord(null);
       const newCurrentRow = [...currentRow.row];
       const findEmpty = newCurrentRow.findIndex((item) => item.letter === '');
       if (findEmpty === -1) {
         return;
       }
-      newCurrentRow[findEmpty] = { ...newCurrentRow[findEmpty], letter: char, animation: LetterAnimationType.TYPING };
+      newCurrentRow[findEmpty] = { ...newCurrentRow[findEmpty], letter: char };
       setCurrentRow({ ...currentRow, row: newCurrentRow });
       setIsSubmitting(false);
     }
@@ -213,8 +214,9 @@ const WordleGame: React.FC<any> = () => {
                 <Guess
                   key={idx}
                   attempt={currentRow.rowIndex === idx ? currentRow.row : row}
-                  isRowFlipped={currentRow.rowIndex === idx && isSubmitting}
-                  isRowShaking={currentRow.rowIndex === idx && !isValidWord}
+                  isRowFlipping={currentRow.rowIndex === idx && isSubmitting}
+                  isRowShaking={currentRow.rowIndex === idx && isValidWord === false}
+                  isRowTyping={currentRow.rowIndex === idx && isTyping}
                   incrementIndex={handleIncrementIndex}
                 />
               );

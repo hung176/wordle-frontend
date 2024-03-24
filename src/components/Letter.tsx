@@ -4,6 +4,7 @@ import { useAnimate } from 'framer-motion';
 
 export type LetterProps = LetterType &
   HTMLAttributes<HTMLDivElement> & {
+    animation?: LetterAnimationType;
     flipDelay?: number;
     incrementIndex?: () => Promise<void>;
   };
