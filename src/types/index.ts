@@ -11,6 +11,7 @@ export enum LetterAnimationType {
   FLIP,
   TYPING,
   INITIAL,
+  SHAKE,
 }
 
 export type Letter = {

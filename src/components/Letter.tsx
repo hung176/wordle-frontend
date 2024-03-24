@@ -16,8 +16,7 @@ const Letter: React.FC<LetterProps> = ({ letter, position, tw, animation, flipDe
       (async () => {
         await animate(scope.current, { scale: [1, 1.2, 1] }, { duration: 0.3 });
       })();
-    }
-    if (animation === LetterAnimationType.FLIP) {
+    } else if (animation === LetterAnimationType.FLIP) {
       (async () => {
         const color = tw?.includes('green') ? '#6aaa64' : tw?.includes('yellow') ? '#c9b458' : '#787c7e';
         await animate(
@@ -30,6 +29,10 @@ const Letter: React.FC<LetterProps> = ({ letter, position, tw, animation, flipDe
         if (position === 4) {
           await incrementIndex?.();
         }
+      })();
+    } else if (animation === LetterAnimationType.SHAKE) {
+      (async () => {
+        await animate(scope.current, { x: [-5, 5, -5, 5, -5, 5, -5, 0] }, { duration: 0.5 });
       })();
     }
   }, [animation]);

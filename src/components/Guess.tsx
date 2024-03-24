@@ -11,10 +11,11 @@ export enum ColorOptions {
 interface GuessProps {
   attempt: Attempt;
   isRowFlipped?: boolean;
+  isRowShaking?: boolean;
   incrementIndex: () => Promise<void>;
 }
 
-const Guess: React.FC<GuessProps> = ({ attempt, isRowFlipped, incrementIndex }) => {
+const Guess: React.FC<GuessProps> = ({ attempt, isRowFlipped, isRowShaking, incrementIndex }) => {
   return (
     <div className="w-80 flex items-center justify-between">
       {attempt.map(({ letter, position, green, yellow, gray, animation }, idx) => {
@@ -24,13 +25,19 @@ const Guess: React.FC<GuessProps> = ({ attempt, isRowFlipped, incrementIndex }) 
           green ? ColorOptions.GREEN : yellow ? ColorOptions.YELLOW : gray || letter ? ColorOptions.GRAY : ''
         } text-${green || yellow || gray ? 'white' : ''} w-14 h-14 p-7`;
 
+        const animationType = isRowFlipped
+          ? LetterAnimationType.FLIP
+          : isRowShaking
+          ? LetterAnimationType.SHAKE
+          : animation;
+
         return (
           <Letter
             key={position}
             letter={letter}
             position={position}
             tw={tw}
-            animation={isRowFlipped ? LetterAnimationType.FLIP : animation}
+            animation={animationType}
             flipDelay={idx * 0.5}
             incrementIndex={incrementIndex}
           />

@@ -5,7 +5,7 @@ import VirtualKeyboard, { KEYS, KeyPressType } from '@/components/VirtualKeyboar
 import Guess from '@/components/Guess';
 import HowToPlay from '@/components/HowToPlay';
 import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
-import useSession from '@/hooks/useSession';
+import useSession, { GUESS_API_URL } from '@/hooks/useSession';
 import { Attempt, LetterAnimationType, STATUS } from '@/types';
 import { useToast } from '../context/toast-provider';
 import Toast from '@/components/common/Toast';
@@ -13,6 +13,8 @@ import GiveUpModal from '@/components/common/GiveUpModal';
 import Hint from '@/components/common/Hint';
 import GameEnd from '@/components/GameEnd';
 import SettingButton from '@/components/common/SettingButton';
+import { useSWRConfig } from 'swr';
+import { usePrevious } from '@/hooks/usePrevious';
 
 const WordleGame: React.FC<any> = () => {
   const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
@@ -37,6 +39,9 @@ const WordleGame: React.FC<any> = () => {
 
   const [currentRow, setCurrentRow] = React.useState({ row: defaultAttempt, rowIndex: 0 });
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
+  const [isValidWord, setIsValidWord] = React.useState<boolean>(true);
+  const previousRow = usePrevious(currentRow);
+  console.log(currentRow);
 
   const refDiv = React.useRef<HTMLDivElement>(null);
 
@@ -47,18 +52,22 @@ const WordleGame: React.FC<any> = () => {
   React.useEffect(() => {
     if (session && session?.attempts.length !== currentRow.rowIndex) {
       setCurrentRow({ ...currentRow, rowIndex: session?.attempts.length });
+      setIsValidWord(true);
     }
   }, [session]);
 
   const handleKeyChange = async (char: string) => {
-    console.log('char', char);
     if (KeyPressType.ENTER === char) {
       if (isSubmitting || isMutating || isValidating) {
         return;
       }
 
       const currentGuess = currentRow.row.reduce((acc, curr) => acc + curr.letter, '');
+      const previousGuess = previousRow?.row.reduce((acc, curr) => acc + curr.letter, '');
       const sessionId = session?.sessionId as string;
+
+      console.log('currentGuess', currentGuess);
+      console.log('previousGuess', previousGuess);
 
       if (currentGuess.length < 5) {
         toast.open({
@@ -68,12 +77,25 @@ const WordleGame: React.FC<any> = () => {
         return;
       }
 
+      setIsValidWord(true);
+
+      if (currentGuess === previousGuess) {
+        return;
+      }
+
       const newSession = await submitGuess({ guess: currentGuess, sessionId });
+      if (newSession.wordNotInList) {
+        setIsValidWord(false);
+        toast.open({
+          component: <Toast message="The word is not in the list" />,
+          timeout: 5000,
+        });
+        return;
+      }
 
       const newCurrentRow = newSession.attempts[newSession.attempts.length - 1];
       setCurrentRow({ ...currentRow, row: newCurrentRow });
       setIsSubmitting(true);
-
       if (
         newSession.status === STATUS.FAILED ||
         newSession.status === STATUS.SUCCESS ||
@@ -192,6 +214,7 @@ const WordleGame: React.FC<any> = () => {
                   key={idx}
                   attempt={currentRow.rowIndex === idx ? currentRow.row : row}
                   isRowFlipped={currentRow.rowIndex === idx && isSubmitting}
+                  isRowShaking={currentRow.rowIndex === idx && !isValidWord}
                   incrementIndex={handleIncrementIndex}
                 />
               );
