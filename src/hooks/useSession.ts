@@ -1,6 +1,5 @@
 import React from 'react';
 import useSWRMutation from 'swr/mutation';
-import type { SessionType } from '../types/index';
 import useSWR from 'swr';
 import { useLocalStorage } from './useLocalStorage';
 
@@ -78,11 +77,15 @@ async function startNewSession(url: string) {
 export default function useSession() {
   const [sessionId, saveSessionId] = useLocalStorage<string | null>('sessionId', null);
 
-  const { data, error, mutate, isLoading } = useSWR(START_API_URL, (url: string) => fetchSession(url, { sessionId }), {
-    revalidateOnFocus: false,
-  });
+  const { data, error, mutate, isLoading, isValidating } = useSWR(
+    START_API_URL,
+    (url: string) => fetchSession(url, { sessionId }),
+    {
+      revalidateOnFocus: false,
+    }
+  );
 
-  const { trigger: submitGuess } = useSWRMutation(GUESS_API_URL, guessFetcher);
+  const { trigger: submitGuess, isMutating } = useSWRMutation(GUESS_API_URL, guessFetcher);
   const { trigger: endSession } = useSWRMutation(END_API_URL, endSessionFetcher);
   const { trigger: startNewGame } = useSWRMutation(START_API_URL, startNewSession);
 
@@ -95,6 +98,8 @@ export default function useSession() {
   return {
     session: data,
     isLoading,
+    isMutating,
+    isValidating,
     error,
     mutate,
     submitGuess,

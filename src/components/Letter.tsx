@@ -3,7 +3,10 @@ import { LetterAnimationType, Letter as LetterType } from '@/types';
 import { useAnimate } from 'framer-motion';
 
 export type LetterProps = LetterType &
-  HTMLAttributes<HTMLDivElement> & { flipDelay?: number; incrementIndex?: () => Promise<void> };
+  HTMLAttributes<HTMLDivElement> & {
+    flipDelay?: number;
+    incrementIndex?: () => Promise<void>;
+  };
 
 const Letter: React.FC<LetterProps> = ({ letter, position, tw, animation, flipDelay, incrementIndex }) => {
   const [scope, animate] = useAnimate();

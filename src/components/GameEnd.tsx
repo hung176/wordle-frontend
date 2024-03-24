@@ -18,7 +18,7 @@ const GameEnd: React.FC<{ wordToGuess: string; status: STATUS }> = ({ wordToGues
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
-      <div className="w-1/5 flex flex-col items-center border rounded-md border-gray-200 shadow-lg">
+      <div className="w-[350px] flex flex-col items-center border rounded-md border-gray-200 shadow-lg">
         <div className="w-[100%] p-4 bg-slate-500 rounded-t-md text-center">
           <span className="text-2xl font-semibold text-white">{result}</span>
         </div>

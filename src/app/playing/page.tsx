@@ -18,7 +18,7 @@ const WordleGame: React.FC<any> = () => {
   const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
   const [openEndSessionModal, setOpenEndSessionModal] = React.useState<boolean>(false);
 
-  const { session, error, isLoading, mutate, submitGuess, endSession } = useSession();
+  const { session, error, isLoading, mutate, submitGuess, endSession, isMutating, isValidating } = useSession();
   const toast = useToast();
 
   const defaultAttempt: Attempt = Array(5)
@@ -51,7 +51,12 @@ const WordleGame: React.FC<any> = () => {
   }, [session]);
 
   const handleKeyChange = async (char: string) => {
+    console.log('char', char);
     if (KeyPressType.ENTER === char) {
+      if (isSubmitting || isMutating || isValidating) {
+        return;
+      }
+
       const currentGuess = currentRow.row.reduce((acc, curr) => acc + curr.letter, '');
       const sessionId = session?.sessionId as string;
 
