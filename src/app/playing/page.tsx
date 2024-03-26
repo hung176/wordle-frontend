@@ -187,7 +187,7 @@ const WordleGame: React.FC<any> = () => {
             >
               Give up
             </button>
-            <Hint sessionId={session?.sessionId} prevHints={session.hints} />
+            <Hint sessionId={session?.sessionId} prevHints={session.hints} isDisabled={isWin || isLose} />
           </div>
           <div className="font-bold text-3xl text-center">Wordle</div>
           <div className="w-[350px] flex justify-end items-center">

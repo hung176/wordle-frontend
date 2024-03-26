@@ -36,7 +36,7 @@ const HowToPlay: React.FC<HowToPlayProps> = ({ open, onClose }) => {
       <button onClick={onClose} className="absolute top-4 right-4">
         <XMarkIcon className="w-6 h-6" />
       </button>
-      <div className="flex flex-col">
+      <div className="flex flex-col p-8">
         <h1>How To Play</h1>
         <h2 className="mb-2">Guess the Wordle in 6 tries.</h2>
 
