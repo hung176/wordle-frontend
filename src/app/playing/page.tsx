@@ -9,15 +9,14 @@ import useSession from '@/hooks/useSession';
 import { Attempt, STATUS } from '@/types';
 import { useToast } from '../context/toast-provider';
 import Toast from '@/components/common/Toast';
-import GiveUpModal from '@/components/common/GiveUpModal';
 import Hint from '@/components/common/Hint';
-import GameEnd from '@/components/GameEnd';
 import SettingButton from '@/components/common/SettingButton';
 import { usePrevious } from '@/hooks/usePrevious';
+import GameEndModal from '@/components/common/GameEndModal';
 
 const WordleGame: React.FC<any> = () => {
   const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
-  const [openEndSessionModal, setOpenEndSessionModal] = React.useState<boolean>(false);
+  const [openGameEndModal, setOpenGameEndModal] = React.useState<boolean>(false);
 
   const { session, error, isLoading, mutate, submitGuess, endSession, isMutating, isValidating } = useSession();
   const toast = useToast();
@@ -55,7 +54,19 @@ const WordleGame: React.FC<any> = () => {
     }
   }, [session]);
 
+  React.useEffect(() => {
+    if (session?.status === STATUS.FAILED || session?.status === STATUS.SUCCESS || session?.status === STATUS.ENDED) {
+      setOpenGameEndModal(true);
+    }
+  }, [session?.status]);
+
+  const isWin = session?.status === STATUS.SUCCESS;
+  const isLose = session?.status === STATUS.FAILED || session?.status === STATUS.ENDED;
+
   const handleKeyChange = async (char: string) => {
+    if (isWin || isLose) {
+      return;
+    }
     if (KeyPressType.ENTER === char) {
       setIsTyping(false);
       if (isSubmitting || isMutating || isValidating) {
@@ -140,17 +151,10 @@ const WordleGame: React.FC<any> = () => {
   };
 
   const handleGiveUp = async () => {
-    setOpenEndSessionModal(false);
+    setOpenGameEndModal(true);
     const sessionId = session?.sessionId as string;
     const sessionEnded = await endSession({ sessionId });
-    if (sessionEnded.status === STATUS.ENDED) {
-      const word = sessionEnded?.wordToGuess;
-      const wordSplit = word.split('');
-      const newCurrentRow = currentRow.row.map((item, idx) => {
-        return { ...item, letter: wordSplit[idx], green: true };
-      });
-      setCurrentRow({ ...currentRow, row: newCurrentRow });
-    }
+    mutate(sessionEnded);
   };
 
   const handleIncrementIndex = async () => {
@@ -159,19 +163,12 @@ const WordleGame: React.FC<any> = () => {
     setIsSubmitting(false);
   };
 
-  const isGameCompleted =
-    session?.status === STATUS.ENDED || session?.status === STATUS.SUCCESS || session?.status === STATUS.FAILED;
-
   if (isLoading || !session) {
     return <div className="flex min-h-screen flex-col items-center justify-center">Loading...</div>;
   }
 
   if (error) {
     return <div className="flex min-h-screen flex-col items-center justify-center">Something went wrong...</div>;
-  }
-
-  if (isGameCompleted) {
-    return <GameEnd wordToGuess={session.wordToGuess} status={session?.status} />;
   }
 
   return (
@@ -185,7 +182,7 @@ const WordleGame: React.FC<any> = () => {
         <div className="w-[100%] border-x-gray-200 border shadow flex justify-center items-center mb-4 px-4 py-3">
           <div className="w-[350px] flex justify-start items-center">
             <button
-              onClick={() => setOpenEndSessionModal(true)}
+              onClick={handleGiveUp}
               className="mr-2 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-xs px-2 py-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
             >
               Give up
@@ -223,13 +220,31 @@ const WordleGame: React.FC<any> = () => {
             })}
           </div>
 
+          <div className="mb-5">
+            {isWin && (
+              <span className="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                You Won!
+              </span>
+            )}
+            {isLose && (
+              <span className="bg-red-100 text-red-800 font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300 p-4 text-sm">
+                You Lost!
+              </span>
+            )}
+          </div>
+
           <div ref={refDiv} tabIndex={-1} onKeyDown={handleKeyDown} className="w-[100%] outline-none">
             <VirtualKeyboard keyColors={session?.keyboardColor || {}} onKeyChange={handleKeyChange} />
           </div>
 
           <HowToPlay onClose={() => setOpenHowToPlay(false)} open={openHowToPlay} />
 
-          <GiveUpModal open={openEndSessionModal} onClose={() => setOpenEndSessionModal(false)} giveUp={handleGiveUp} />
+          <GameEndModal
+            word={session?.wordToGuess}
+            isWin={isWin}
+            open={openGameEndModal}
+            onClose={() => setOpenGameEndModal(false)}
+          />
         </div>
       </div>
     </div>
