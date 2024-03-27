@@ -25,7 +25,6 @@ const Letter: React.FC<LetterProps> = ({ letter, position, tw, animation, flipDe
           { rotateX: [0, 45, 90, 90, 45, 0], color: '#fff', borderColor: color, backgroundColor: color },
           { duration: 0.5, delay: flipDelay }
         );
-
         // animation end
         if (position === 4) {
           await incrementIndex?.();
@@ -36,7 +35,11 @@ const Letter: React.FC<LetterProps> = ({ letter, position, tw, animation, flipDe
         await animate(scope.current, { x: [-5, 5, -5, 5, -5, 5, -5, 0] }, { duration: 0.5 });
       })();
     }
-  }, [animation]);
+
+    return () => {
+      scope.current?.removeAttribute('style');
+    };
+  }, [animation, letter]);
 
   return (
     <div

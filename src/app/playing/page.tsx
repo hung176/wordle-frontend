@@ -244,6 +244,7 @@ const WordleGame: React.FC<any> = () => {
             isWin={isWin}
             open={openGameEndModal}
             onClose={() => setOpenGameEndModal(false)}
+            setToDefaultRow={() => setCurrentRow({ rowIndex: 0, row: defaultAttempt })}
           />
         </div>
       </div>

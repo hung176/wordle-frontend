@@ -1,15 +1,27 @@
 import React from 'react';
 import Modal from './Modal';
 import { LinkIcon } from '@heroicons/react/24/solid';
+import useSession from '@/hooks/useSession';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 interface GameEndModalProps {
   isWin: boolean;
   word: string;
   open: boolean;
   onClose: () => void;
+  setToDefaultRow: () => void;
 }
 
-const GameEndModal: React.FC<GameEndModalProps> = ({ isWin, word = '', open, onClose }) => {
+const GameEndModal: React.FC<GameEndModalProps> = ({ isWin, word = '', open, onClose, setToDefaultRow }) => {
+  const { startNewGame } = useSession();
+  const [, setSessionId] = useLocalStorage('sessionId', null);
+
+  const handleNewGame = async () => {
+    const newSession = await startNewGame();
+    setSessionId(newSession.sessionId);
+    onClose();
+    window.location.reload();
+  };
   return (
     <Modal isOpen={open} onClose={onClose} closeOnOutsideClick={false}>
       <div className="w-[300px] h-[400px] flex flex-col justify-start items-center">
@@ -31,14 +43,14 @@ const GameEndModal: React.FC<GameEndModalProps> = ({ isWin, word = '', open, onC
               {word.toUpperCase()}
             </div>
             <div className="mt-2 mb-2 text-sm">
-              <a href={`https://wordfind.org/dictionary/bully`} target="_blank">
+              <a href={`https://wordfind.org/dictionary/${word}`} target="_blank">
                 What does this word mean?
               </a>
             </div>
           </div>
           <div>
             <button
-              onClick={() => {}}
+              onClick={handleNewGame}
               className="border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-4 py-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
             >
               New game
