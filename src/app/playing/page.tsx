@@ -13,10 +13,12 @@ import Hint from '@/components/common/Hint';
 import SettingButton from '@/components/common/SettingButton';
 import { usePrevious } from '@/hooks/usePrevious';
 import GameEndModal from '@/components/common/GameEndModal';
+import Setting from '@/components/Setting';
 
 const WordleGame: React.FC<any> = () => {
   const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
   const [openGameEndModal, setOpenGameEndModal] = React.useState<boolean>(false);
+  const [isSettingOpen, setIsSettingOpen] = React.useState<boolean>(true);
 
   const { session, error, isLoading, mutate, submitGuess, endSession, isMutating, isValidating } = useSession();
   const toast = useToast();
@@ -163,6 +165,10 @@ const WordleGame: React.FC<any> = () => {
     setIsSubmitting(false);
   };
 
+  const toggleSetting = () => {
+    setIsSettingOpen(!isSettingOpen);
+  };
+
   if (isLoading || !session) {
     return <div className="flex min-h-screen flex-col items-center justify-center">Loading...</div>;
   }
@@ -201,52 +207,60 @@ const WordleGame: React.FC<any> = () => {
             >
               <QuestionMarkCircleIcon onClick={() => setOpenHowToPlay(true)} className="w-8 h-8 cursor-pointer mr-5" />
             </motion.div>
-            <SettingButton onClick={() => console.log('setting button')} />
+            <SettingButton onClick={toggleSetting} />
           </div>
         </div>
-        <div className="w-[500px] h-auto flex flex-col justify-center items-center">
-          <div className="h-96 mb-5 flex flex-col justify-between">
-            {rows.map((row, idx) => {
-              return (
-                <Guess
-                  key={idx}
-                  attempt={currentRow.rowIndex === idx ? currentRow.row : row}
-                  isRowFlipping={currentRow.rowIndex === idx && isSubmitting}
-                  isRowShaking={currentRow.rowIndex === idx && isValidWord === false}
-                  isRowTyping={currentRow.rowIndex === idx && isTyping}
-                  incrementIndex={handleIncrementIndex}
-                />
-              );
-            })}
+        {isSettingOpen && (
+          <div className="w-[500px] h-[616px]">
+            <Setting toggleSetting={toggleSetting} />
           </div>
+        )}
 
-          <div className="mb-5">
-            {isWin && (
-              <span className="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
-                You Won!
-              </span>
-            )}
-            {isLose && (
-              <span className="bg-red-100 text-red-800 font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300 p-4 text-sm">
-                You Lost!
-              </span>
-            )}
+        {!isSettingOpen && (
+          <div className="w-[500px] h-[616px] flex flex-col justify-center items-center">
+            <div className="h-96 mb-5 flex flex-col justify-between">
+              {rows.map((row, idx) => {
+                return (
+                  <Guess
+                    key={idx}
+                    attempt={currentRow.rowIndex === idx ? currentRow.row : row}
+                    isRowFlipping={currentRow.rowIndex === idx && isSubmitting}
+                    isRowShaking={currentRow.rowIndex === idx && isValidWord === false}
+                    isRowTyping={currentRow.rowIndex === idx && isTyping}
+                    incrementIndex={handleIncrementIndex}
+                  />
+                );
+              })}
+            </div>
+
+            <div className="mb-5">
+              {isWin && (
+                <span className="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
+                  You Won!
+                </span>
+              )}
+              {isLose && (
+                <span className="bg-red-100 text-red-800 font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300 p-4 text-sm">
+                  You Lost!
+                </span>
+              )}
+            </div>
+
+            <div ref={refDiv} tabIndex={-1} onKeyDown={handleKeyDown} className="w-[100%] outline-none">
+              <VirtualKeyboard keyColors={session?.keyboardColor || {}} onKeyChange={handleKeyChange} />
+            </div>
+
+            <HowToPlay onClose={() => setOpenHowToPlay(false)} open={openHowToPlay} />
+
+            <GameEndModal
+              word={session?.wordToGuess}
+              isWin={isWin}
+              open={openGameEndModal}
+              onClose={() => setOpenGameEndModal(false)}
+              setToDefaultRow={() => setCurrentRow({ rowIndex: 0, row: defaultAttempt })}
+            />
           </div>
-
-          <div ref={refDiv} tabIndex={-1} onKeyDown={handleKeyDown} className="w-[100%] outline-none">
-            <VirtualKeyboard keyColors={session?.keyboardColor || {}} onKeyChange={handleKeyChange} />
-          </div>
-
-          <HowToPlay onClose={() => setOpenHowToPlay(false)} open={openHowToPlay} />
-
-          <GameEndModal
-            word={session?.wordToGuess}
-            isWin={isWin}
-            open={openGameEndModal}
-            onClose={() => setOpenGameEndModal(false)}
-            setToDefaultRow={() => setCurrentRow({ rowIndex: 0, row: defaultAttempt })}
-          />
-        </div>
+        )}
       </div>
     </div>
   );

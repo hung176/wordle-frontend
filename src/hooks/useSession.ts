@@ -2,6 +2,7 @@ import React from 'react';
 import useSWRMutation from 'swr/mutation';
 import useSWR from 'swr';
 import { useLocalStorage } from './useLocalStorage';
+import { SettingProps, SettingType } from '@/components/Setting';
 
 export const START_API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/start`;
 export const GUESS_API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/guess`;
@@ -76,6 +77,9 @@ async function startNewSession(url: string) {
 
 export default function useSession() {
   const [sessionId, saveSessionId] = useLocalStorage<string | null>('sessionId', null);
+  const [setting, setSetting] = useLocalStorage<SettingType>('setting', { dailyMode: false, swapButton: false });
+
+  const { dailyMode = false, swapButton = false } = setting;
 
   const { data, error, mutate, isLoading, isValidating } = useSWR(
     START_API_URL,
@@ -105,5 +109,7 @@ export default function useSession() {
     submitGuess,
     endSession,
     startNewGame,
+    setting,
+    setSetting,
   };
 }
