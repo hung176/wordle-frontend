@@ -79,7 +79,7 @@ export default function useSession() {
   const [sessionId, saveSessionId] = useLocalStorage<string | null>('sessionId', null);
   const [setting, setSetting] = useLocalStorage<SettingType>('setting', { dailyMode: false, swapButton: false });
 
-  const { dailyMode = false, swapButton = false } = setting;
+  // const { dailyMode = false, swapButton = false } = setting;
 
   const { data, error, mutate, isLoading, isValidating } = useSWR(
     START_API_URL,
