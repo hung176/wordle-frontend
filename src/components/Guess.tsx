@@ -20,13 +20,13 @@ interface GuessProps {
 const Guess: React.FC<GuessProps> = ({ attempt, isRowFlipping, isRowShaking, isRowTyping, incrementIndex }) => {
   const previousRow = usePrevious(attempt);
   return (
-    <div className="w-80 flex items-center justify-between">
+    <div className="flex items-center justify-between mb-2">
       {attempt.map(({ letter, position, green, yellow, gray }, idx) => {
         const tw = `bg-${
           green ? ColorOptions.GREEN : yellow ? ColorOptions.YELLOW : gray ? ColorOptions.GRAY : ''
         } border-${
           green ? ColorOptions.GREEN : yellow ? ColorOptions.YELLOW : gray || letter ? ColorOptions.GRAY : ''
-        } text-${green || yellow || gray ? 'white' : ''} w-14 h-14 p-7`;
+        } text-${green || yellow || gray ? 'white' : ''} p-6 w-12 h-12 ${position === 4 ? 'mr-0' : 'mr-2'}`;
 
         const shakingIndex = previousRow[idx].letter === '' && letter !== '';
 

@@ -4,13 +4,12 @@ import { motion } from 'framer-motion';
 import VirtualKeyboard, { KEYS, KeyPressType } from '@/components/VirtualKeyboard';
 import Guess from '@/components/Guess';
 import HowToPlay from '@/components/HowToPlay';
-import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
+import { Cog8ToothIcon, QuestionMarkCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import useSession from '@/hooks/useSession';
 import { Attempt, STATUS } from '@/types';
 import { useToast } from '../context/toast-provider';
 import Toast from '@/components/common/Toast';
 import Hint from '@/components/common/Hint';
-import SettingButton from '@/components/common/SettingButton';
 import { usePrevious } from '@/hooks/usePrevious';
 import GameEndModal from '@/components/common/GameEndModal';
 import Setting from '@/components/Setting';
@@ -18,7 +17,7 @@ import Setting from '@/components/Setting';
 const WordleGame: React.FC<any> = () => {
   const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
   const [openGameEndModal, setOpenGameEndModal] = React.useState<boolean>(false);
-  const [isSettingOpen, setIsSettingOpen] = React.useState<boolean>(true);
+  const [isSettingOpen, setIsSettingOpen] = React.useState<boolean>(false);
 
   const { session, error, isLoading, mutate, submitGuess, endSession, isMutating, isValidating } = useSession();
   const toast = useToast();
@@ -66,6 +65,7 @@ const WordleGame: React.FC<any> = () => {
   const isLose = session?.status === STATUS.FAILED || session?.status === STATUS.ENDED;
 
   const handleKeyChange = async (char: string) => {
+    console.log(char);
     if (isWin || isLose) {
       return;
     }
@@ -182,43 +182,70 @@ const WordleGame: React.FC<any> = () => {
       onMouseUp={() => {
         refDiv.current?.focus();
       }}
-      className="flex items-center justify-center text-black"
+      className="w-[100%] h-[100%] flex justify-center items-center"
     >
-      <div className="min-h-screen w-[100%] flex flex-col justify-center items-center">
-        <div className="w-[100%] border-x-gray-200 border shadow flex justify-center items-center mb-4 px-4 py-3">
+      <div className="flex flex-col justify-center items-center">
+        <div className="w-[300px] mobile:w-[500px] flex justify-center items-center mobile:mb-6 py-3">
           <div className="w-[350px] flex justify-start items-center">
-            <button
-              onClick={handleGiveUp}
-              className="mr-2 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-xs px-2 py-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-            >
-              Give up
-            </button>
             <Hint sessionId={session?.sessionId} prevHints={session.hints} isDisabled={isWin || isLose} />
-          </div>
-          <div className="font-bold text-3xl text-center">Wordle</div>
-          <div className="w-[350px] flex justify-end items-center">
             <motion.div
+              className="bg-gray-200 rounded-md flex justify-center items-center p-1"
               initial="rest"
               variants={{
                 rest: { y: 0 },
-                hover: { y: [0, -5, 0], transition: { repeat: Infinity, duration: 0.6 } },
+                hover: { y: [0, -5, 0], transition: { duration: 0.7 } },
               }}
               whileHover="hover"
             >
-              <QuestionMarkCircleIcon onClick={() => setOpenHowToPlay(true)} className="w-8 h-8 cursor-pointer mr-5" />
+              <QuestionMarkCircleIcon onClick={() => setOpenHowToPlay(true)} className="w-6 h-6 cursor-pointer" />
             </motion.div>
-            <SettingButton onClick={toggleSetting} />
+          </div>
+          <div className="flex justify-center items-center cursor-pointer">
+            <span className="hidden mobile:block mobile:font-bold mobile:text-3xl mr-1">Wordle+</span>
+            <div className="bg-gray-200 rounded-md flex justify-center items-center p-1 mobile:hidden">
+              <PlusCircleIcon className="w-6 h-6 " />
+            </div>
+          </div>
+          <div className="w-[350px] flex justify-end items-center">
+            <motion.div
+              className="bg-gray-200 rounded-md flex justify-center items-center p-1"
+              onClick={toggleSetting}
+              variants={{
+                rest: { scale: 1 },
+                hover: { scale: 1.1 },
+                pressed: { scale: 0.95 },
+              }}
+              initial="rest"
+              whileHover="hover"
+              whileTap="pressed"
+            >
+              <motion.div
+                variants={{
+                  rest: { rotate: 0 },
+                  hover: { rotate: 360, transition: { duration: 3 } },
+                }}
+              >
+                <Cog8ToothIcon className="w-6 h-6 cursor-pointer text-wl-gray" />
+              </motion.div>
+            </motion.div>
+            <button
+              onClick={handleGiveUp}
+              disabled={isLose || isWin}
+              className="px-2 py-1 ml-2 bg-gray-200 rounded-md text-sm hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Give up
+            </button>
           </div>
         </div>
         {isSettingOpen && (
-          <div className="w-[500px] h-[616px]">
+          <div className="h-[540px] min-[376px]:h-[596px]">
             <Setting toggleSetting={toggleSetting} />
           </div>
         )}
 
         {!isSettingOpen && (
-          <div className="w-[500px] h-[616px] flex flex-col justify-center items-center">
-            <div className="h-96 mb-5 flex flex-col justify-between">
+          <div className="w-[100%] p-2 flex flex-col justify-center items-center">
+            <div className="min-[375px]:mb-5 flex flex-col justify-between">
               {rows.map((row, idx) => {
                 return (
                   <Guess
@@ -246,7 +273,7 @@ const WordleGame: React.FC<any> = () => {
               )}
             </div>
 
-            <div ref={refDiv} tabIndex={-1} onKeyDown={handleKeyDown} className="w-[100%] outline-none">
+            <div ref={refDiv} tabIndex={-1} onKeyDown={handleKeyDown} className="outline-none">
               <VirtualKeyboard keyColors={session?.keyboardColor || {}} onKeyChange={handleKeyChange} />
             </div>
 

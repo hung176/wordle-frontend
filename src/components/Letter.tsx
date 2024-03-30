@@ -45,7 +45,7 @@ const Letter: React.FC<LetterProps> = ({ letter, position, tw, animation, flipDe
     <div
       ref={scope}
       className={`flex items-center justify-center font-bold border border-gray-300 text-3xl
-      ${animation === LetterAnimationType.FLIP ? 'w-14 h-14 p-7' : tw}
+      ${animation === LetterAnimationType.FLIP ? 'w-[50px] h-[50px]' : tw}
       `}
     >
       {letter?.toUpperCase()}
