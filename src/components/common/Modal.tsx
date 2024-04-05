@@ -18,7 +18,7 @@ const Modal: React.FC<ModalProps> = ({ children, isOpen, onClose, closeOnOutside
   return (
     <div
       onClick={handleCloseClickOutside}
-      className={`px-2 fixed inset-0 flex justify-center items-center transition-colors ${
+      className={`h-screen overflow-scroll px-2 fixed inset-0 flex justify-center items-center transition-colors ${
         isOpen ? 'visible bg-black/20' : 'invisible'
       }`}
     >

@@ -27,12 +27,12 @@ const GameEndModal: React.FC<GameEndModalProps> = ({ isWin, word = '', open, onC
       <div className="w-[300px] h-[400px] flex flex-col justify-start items-center">
         <div
           className={`w-[100%] ${
-            isWin ? 'bg-green-200' : 'bg-gray-200'
+            isWin ? 'bg-wl-green' : 'bg-wl-gray'
           } p-3 rounded-t-lg flex items-center justify-between`}
         >
           <div className="w-6" />
-          <div className="text-xl font-semibold">{isWin ? 'You Won!' : 'You Lost!'}</div>
-          <div className="text-center cursor-pointer text-gray-600 text-xl" onClick={onClose}>
+          <div className="text-xl text-white font-semibold">{isWin ? 'You Won!' : 'You Lost!'}</div>
+          <div className="text-center cursor-pointer text-white text-xl" onClick={onClose}>
             ✖
           </div>
         </div>
@@ -51,7 +51,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({ isWin, word = '', open, onC
           <div>
             <button
               onClick={handleNewGame}
-              className="border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-4 py-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+              className="px-2 py-1 ml-2 bg-gray-200 rounded-md text-sm hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               New game
             </button>

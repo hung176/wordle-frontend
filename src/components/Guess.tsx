@@ -3,12 +3,6 @@ import Letter from './Letter';
 import { Attempt, LetterAnimationType, Letter as LetterType } from '@/types';
 import { usePrevious } from '@/hooks/usePrevious';
 
-export enum ColorOptions {
-  GREEN = 'wl-green',
-  YELLOW = 'wl-yellow',
-  GRAY = 'wl-gray',
-}
-
 interface GuessProps {
   attempt: Attempt;
   isRowFlipping?: boolean;
@@ -22,12 +16,6 @@ const Guess: React.FC<GuessProps> = ({ attempt, isRowFlipping, isRowShaking, isR
   return (
     <div className="flex items-center justify-between mb-2">
       {attempt.map(({ letter, position, green, yellow, gray }, idx) => {
-        const tw = `bg-${
-          green ? ColorOptions.GREEN : yellow ? ColorOptions.YELLOW : gray ? ColorOptions.GRAY : ''
-        } border-${
-          green ? ColorOptions.GREEN : yellow ? ColorOptions.YELLOW : gray || letter ? ColorOptions.GRAY : ''
-        } text-${green || yellow || gray ? 'white' : ''} p-6 w-12 h-12 ${position === 4 ? 'mr-0' : 'mr-2'}`;
-
         const shakingIndex = previousRow[idx].letter === '' && letter !== '';
 
         let animationType: LetterAnimationType;
@@ -46,7 +34,7 @@ const Guess: React.FC<GuessProps> = ({ attempt, isRowFlipping, isRowShaking, isR
             key={position}
             letter={letter}
             position={position}
-            tw={tw}
+            color={(green && 'green') || (yellow && 'yellow') || (gray && 'gray') || ''}
             animation={animationType}
             flipDelay={idx * 0.5}
             incrementIndex={incrementIndex}

@@ -39,7 +39,7 @@ export default function Home() {
         </button>
       </div>
 
-      <HowToPlay open={openHowToPlay} onClose={toggleHowToPlay} />
+      {openHowToPlay && <HowToPlay onClose={toggleHowToPlay} />}
     </main>
   );
 }

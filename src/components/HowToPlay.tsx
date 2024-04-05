@@ -3,7 +3,6 @@ import Letter from './Letter';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import Modal from './common/Modal';
 import { motion } from 'framer-motion';
-import { LetterAnimationType } from '@/types';
 
 interface HowToPlayProps {
   onClose: () => void;

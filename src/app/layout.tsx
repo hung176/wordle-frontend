@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`flex justify-center items-center ${raleway.className}`}>
+      <body className={`w-screen h-screen flex justify-center items-center overflow-y-scroll ${raleway.className}`}>
         <ToastProvider>
           <SWRConfigProvider>{children}</SWRConfigProvider>
         </ToastProvider>

@@ -182,9 +182,9 @@ const WordleGame: React.FC<any> = () => {
       onMouseUp={() => {
         refDiv.current?.focus();
       }}
-      className="w-[100%] h-[100%] flex justify-center items-center"
+      className="w-screen h-screen flex justify-center items-center"
     >
-      <div className="flex flex-col justify-center items-center">
+      <div className="h-screen flex flex-col justify-center items-center">
         <div className="w-[300px] mobile:w-[500px] flex justify-center items-center mobile:mb-6 py-3">
           <div className="w-[350px] flex justify-start items-center">
             <Hint sessionId={session?.sessionId} prevHints={session.hints} isDisabled={isWin || isLose} />
@@ -245,7 +245,7 @@ const WordleGame: React.FC<any> = () => {
 
         {!isSettingOpen && (
           <div className="w-[100%] p-2 flex flex-col justify-center items-center">
-            <div className="min-[375px]:mb-5 flex flex-col justify-between">
+            <div className="mb-5 flex flex-col justify-between">
               {rows.map((row, idx) => {
                 return (
                   <Guess
