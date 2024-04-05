@@ -203,7 +203,7 @@ const WordleGame: React.FC<any> = () => {
           <div className="flex justify-center items-center cursor-pointer">
             <span className="hidden mobile:block mobile:font-bold mobile:text-3xl mr-1">Wordle+</span>
             <div className="bg-gray-200 rounded-md flex justify-center items-center p-1 mobile:hidden">
-              <PlusCircleIcon className="w-6 h-6 " />
+              <PlusCircleIcon className="w-6 h-6" />
             </div>
           </div>
           <div className="w-[350px] flex justify-end items-center">
@@ -231,7 +231,7 @@ const WordleGame: React.FC<any> = () => {
             <button
               onClick={handleGiveUp}
               disabled={isLose || isWin}
-              className="px-2 py-1 ml-2 bg-gray-200 rounded-md text-sm hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2 py-1 ml-2 w-20 h-7 bg-gray-200 rounded-md text-sm hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Give up
             </button>
@@ -277,7 +277,7 @@ const WordleGame: React.FC<any> = () => {
               <VirtualKeyboard keyColors={session?.keyboardColor || {}} onKeyChange={handleKeyChange} />
             </div>
 
-            <HowToPlay onClose={() => setOpenHowToPlay(false)} open={openHowToPlay} />
+            {openHowToPlay && <HowToPlay onClose={() => setOpenHowToPlay(false)} />}
 
             <GameEndModal
               word={session?.wordToGuess}

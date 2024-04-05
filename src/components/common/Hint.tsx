@@ -28,13 +28,13 @@ const Hint: React.FC<{ sessionId: string; isDisabled: boolean; prevHints: string
       <button
         disabled={isDisabled}
         onClick={handleOpen}
-        className="px-2 py-1 bg-gray-200 rounded-md text-sm hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed focus:ring focus:ring-gray-300"
+        className="px-2 py-1 w-20 h-7 bg-gray-200 rounded-md text-sm hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed focus:ring focus:ring-gray-300"
       >
         Get hints
       </button>
 
       {isOpen && (
-        <div className="absolute top-[2.5rem] rounded-xl z-auto justify-center w-[15rem] min-[376px]:w-[20rem] bg-gray-200">
+        <div className="absolute top-[2.5rem] rounded-xl z-auto justify-center w-[15rem] min-[376px]:w-[20rem] bg-gray-100">
           <div className="px-4 pt-4">You have 5 hints</div>
 
           <div className="flex flex-col p-4">

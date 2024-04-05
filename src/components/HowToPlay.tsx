@@ -2,37 +2,25 @@ import React from 'react';
 import Letter from './Letter';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import Modal from './common/Modal';
+import { motion } from 'framer-motion';
+import { LetterAnimationType } from '@/types';
 
 interface HowToPlayProps {
-  open: boolean;
   onClose: () => void;
 }
 
-const EXAMPLE_ONE = [
-  { letter: 'W', style: 'bg-wl-green border-wl-green text-white' },
-  { letter: 'E' },
-  { letter: 'A' },
-  { letter: 'R' },
-  { letter: 'Y' },
-];
-const EXAMPLE_TWO = [
-  { letter: 'P' },
-  { letter: 'I', style: 'bg-wl-yellow border-wl-yellow text-white' },
-  { letter: 'L' },
-  { letter: 'L' },
-  { letter: 'S' },
-];
-const EXAMPLE_THREE = [
-  { letter: 'V' },
-  { letter: 'A' },
-  { letter: 'G' },
-  { letter: 'U', style: 'bg-wl-gray border-wl-gray text-white' },
-  { letter: 'E' },
-];
+const EXAMPLE_ONE = ['W', 'E', 'A', 'R', 'Y'];
+const EXAMPLE_TWO = ['P', 'I', 'L', 'L', 'S'];
+const EXAMPLE_THREE = ['V', 'A', 'G', 'U', 'E'];
 
-const HowToPlay: React.FC<HowToPlayProps> = ({ open, onClose }) => {
+const animateProps = {
+  initial: { rotateX: 90 },
+  animate: { rotateX: 0, transition: { duration: 0.5 } },
+};
+
+const HowToPlay: React.FC<HowToPlayProps> = ({ onClose }) => {
   return (
-    <Modal isOpen={open} onClose={onClose}>
+    <Modal isOpen onClose={onClose}>
       <button onClick={onClose} className="absolute top-4 right-4">
         <XMarkIcon className="w-6 h-6" />
       </button>
@@ -56,8 +44,16 @@ const HowToPlay: React.FC<HowToPlayProps> = ({ open, onClose }) => {
           <p className="font-semibold">Example</p>
           <div className="mb-4">
             <div className="flex items-center mb-1">
-              {EXAMPLE_ONE.map(({ letter, style }, index) => (
-                <Letter key={index} letter={letter} tw={`mr-1 w-8 h-8 p-5 ${style}`} />
+              {EXAMPLE_ONE.map((letter, index) => (
+                <motion.div
+                  key={`${letter}${index}`}
+                  className={`flex items-center justify-center font-bold  text-3xl w-8 h-8 p-5 mr-1 ${
+                    index === 0 ? 'bg-wl-green border border-wl-green text-white' : 'border border-gray-300'
+                  } `}
+                  {...(index === 0 ? animateProps : {})}
+                >
+                  {letter}
+                </motion.div>
               ))}
             </div>
             <div>
@@ -67,8 +63,16 @@ const HowToPlay: React.FC<HowToPlayProps> = ({ open, onClose }) => {
 
           <div className="mb-4">
             <div className="flex items-center mb-1">
-              {EXAMPLE_TWO.map(({ letter, style }, index) => (
-                <Letter key={index} letter={letter} tw={`mr-1 w-8 h-8 p-5 ${style}`} />
+              {EXAMPLE_TWO.map((letter, index) => (
+                <motion.div
+                  key={`${letter}${index}`}
+                  className={`flex items-center justify-center font-bold  text-3xl w-8 h-8 p-5 mr-1 ${
+                    index === 1 ? 'bg-wl-yellow border border-wl-yellow text-white' : 'border border-gray-300'
+                  } `}
+                  {...(index === 1 ? animateProps : {})}
+                >
+                  {letter}
+                </motion.div>
               ))}
             </div>
             <div>
@@ -78,8 +82,16 @@ const HowToPlay: React.FC<HowToPlayProps> = ({ open, onClose }) => {
 
           <div>
             <div className="flex items-center mb-1">
-              {EXAMPLE_THREE.map(({ letter, style }, index) => (
-                <Letter key={index} letter={letter} tw={`mr-1 w-8 h-8 p-5 ${style}`} />
+              {EXAMPLE_THREE.map((letter, index) => (
+                <motion.div
+                  key={`${letter}${index}`}
+                  className={`flex items-center justify-center font-bold  text-3xl w-8 h-8 p-5 mr-1 ${
+                    index === 3 ? 'bg-wl-gray border border-wl-grayn text-white' : 'border border-gray-300'
+                  } `}
+                  {...(index === 3 ? animateProps : {})}
+                >
+                  {letter}
+                </motion.div>
               ))}
             </div>
             <div>
