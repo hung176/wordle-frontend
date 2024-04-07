@@ -13,10 +13,12 @@ import Hint from '@/components/common/Hint';
 import GameEndModal from '@/components/common/GameEndModal';
 import Setting, { SettingType } from '@/components/Setting';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import GenerateWord from '@/components/GenerateWord';
 
 const WordleGame: React.FC<any> = () => {
   const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
   const [openGameEndModal, setOpenGameEndModal] = React.useState<boolean>(false);
+  const [openGenerateWord, setOpenGenerateWord] = React.useState<boolean>(false);
 
   const [isSettingOpen, setIsSettingOpen] = React.useState<boolean>(false);
   const defaultSetting: SettingType = {
@@ -48,13 +50,20 @@ const WordleGame: React.FC<any> = () => {
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
   const [isTyping, setIsTyping] = React.useState<boolean>(false);
   const [isShaking, setIsShaking] = React.useState<boolean>(false);
-  console.log(isShaking);
 
   const refDiv = React.useRef<HTMLDivElement>(null);
 
+  console.log('openGenerateWord', openGenerateWord);
+
   React.useEffect(() => {
-    refDiv.current?.focus();
-  });
+    if (!openGenerateWord) {
+      console.log('focus');
+      refDiv.current?.focus();
+    } else {
+      console.log('blur');
+      refDiv.current?.blur();
+    }
+  }, [openGenerateWord]);
 
   React.useEffect(() => {
     if (session && session?.attempts.length !== currentRow.rowIndex) {
@@ -174,6 +183,10 @@ const WordleGame: React.FC<any> = () => {
     setIsSettingOpen(!isSettingOpen);
   };
 
+  const handleGenerateWord = async () => {
+    setOpenGenerateWord(!openGenerateWord);
+  };
+
   if (isLoading || !session) {
     return <div className="flex min-h-screen flex-col items-center justify-center">Loading...</div>;
   }
@@ -185,7 +198,11 @@ const WordleGame: React.FC<any> = () => {
   return (
     <div
       onMouseUp={() => {
-        refDiv.current?.focus();
+        if (!openGenerateWord) {
+          refDiv.current?.focus();
+        } else {
+          refDiv.current?.blur();
+        }
       }}
       className="w-screen h-screen flex justify-center items-center"
     >
@@ -205,8 +222,11 @@ const WordleGame: React.FC<any> = () => {
               <QuestionMarkCircleIcon onClick={() => setOpenHowToPlay(true)} className="w-6 h-6 cursor-pointer" />
             </motion.div>
           </div>
-          <div className="flex justify-center items-center cursor-pointer">
+          <div className="flex justify-center items-center cursor-pointer relative" onClick={handleGenerateWord}>
             <span className="hidden mobile:block mobile:font-bold mobile:text-3xl mr-1">Wordle+</span>
+            <span className="hidden mobile:block mobile:text-[0.7rem] mobile:w-[130px] absolute top-7 left-8">
+              Generate your own word
+            </span>
             <div className="bg-gray-200 rounded-md flex justify-center items-center p-1 mobile:hidden">
               <PlusCircleIcon className="w-6 h-6" />
             </div>
@@ -293,6 +313,8 @@ const WordleGame: React.FC<any> = () => {
             </div>
 
             {openHowToPlay && <HowToPlay onClose={() => setOpenHowToPlay(false)} />}
+
+            {openGenerateWord && <GenerateWord onClose={() => setOpenGenerateWord(false)} />}
           </div>
         )}
 
