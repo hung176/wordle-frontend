@@ -6,6 +6,7 @@ export type SettingProps = {
   settings: { dailyMode: boolean; swapButton: boolean };
   setSettings: React.Dispatch<React.SetStateAction<{ dailyMode: boolean; swapButton: boolean }>>;
   toggle: () => void;
+  isDisabledSetting: boolean;
 };
 
 export type SettingType = {
@@ -13,7 +14,7 @@ export type SettingType = {
   swapButton: boolean;
 };
 
-const Setting: React.FC<SettingProps> = ({ settings, setSettings, toggle }) => {
+const Setting: React.FC<SettingProps> = ({ settings, setSettings, toggle, isDisabledSetting }) => {
   const { startNewGame, mutate } = useSession();
   const [settingsStorage, setSettingsStorage] = useLocalStorage('settings', { dailyMode: false, swapButton: false });
   const [, setSessionId] = useLocalStorage('sessionId', null);
@@ -54,11 +55,16 @@ const Setting: React.FC<SettingProps> = ({ settings, setSettings, toggle }) => {
                 id="dailyMode"
                 type="checkbox"
                 className="peer sr-only"
+                disabled={isDisabledSetting}
                 checked={settings.dailyMode}
                 onChange={handleToggleSetting}
               />
               <label htmlFor="dailyMode" className="hidden"></label>
-              <div className="peer h-6 w-11 rounded-full border bg-slate-200 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-200 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-green-300"></div>
+              <div
+                className={`peer h-6 w-11 rounded-full border bg-slate-200 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-200 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-green-300 ${
+                  isDisabledSetting ? 'opacity-50' : 'opacity-100'
+                }`}
+              ></div>
             </label>
           </div>
         </div>
@@ -74,11 +80,16 @@ const Setting: React.FC<SettingProps> = ({ settings, setSettings, toggle }) => {
                 id="swapButton"
                 type="checkbox"
                 className="peer sr-only"
+                disabled={isDisabledSetting}
                 checked={settings.swapButton}
                 onChange={handleToggleSetting}
               />
               <label htmlFor="swapButton" className="hidden"></label>
-              <div className="peer h-6 w-11 rounded-full border bg-slate-200 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-200 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-green-300"></div>
+              <div
+                className={`peer h-6 w-11 rounded-full border bg-slate-200 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-200 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-green-300 ${
+                  isDisabledSetting ? 'opacity-50' : 'opacity-100'
+                }`}
+              ></div>
             </label>
           </div>
         </div>

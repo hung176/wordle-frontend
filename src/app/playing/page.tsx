@@ -14,6 +14,7 @@ import { usePrevious } from '@/hooks/usePrevious';
 import GameEndModal from '@/components/common/GameEndModal';
 import Setting, { SettingType } from '@/components/Setting';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import Modal from '@/components/common/Modal';
 
 const WordleGame: React.FC<any> = () => {
   const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
@@ -215,9 +216,7 @@ const WordleGame: React.FC<any> = () => {
           </div>
           <div className="w-[350px] flex justify-end items-center">
             <motion.div
-              className={`bg-gray-200 rounded-md flex justify-center items-center p-1 ${
-                isWin || isLose ? 'pointer-events-none opacity-50' : ''
-              }`}
+              className="bg-gray-200 rounded-md flex justify-center items-center p-1"
               onClick={toggleSetting}
               variants={{
                 rest: { scale: 1 },
@@ -248,7 +247,12 @@ const WordleGame: React.FC<any> = () => {
         </div>
         {isSettingOpen && (
           <div className="w-[100%] h-[540px] min-[376px]:h-[596px]">
-            <Setting settings={settings} setSettings={setSettings} toggle={() => setIsSettingOpen(false)} />
+            <Setting
+              settings={settings}
+              setSettings={setSettings}
+              toggle={() => setIsSettingOpen(false)}
+              isDisabledSetting={isWin || isLose}
+            />
           </div>
         )}
 
@@ -292,15 +296,16 @@ const WordleGame: React.FC<any> = () => {
             </div>
 
             {openHowToPlay && <HowToPlay onClose={() => setOpenHowToPlay(false)} />}
-
-            <GameEndModal
-              word={session?.wordToGuess}
-              isWin={isWin}
-              open={openGameEndModal}
-              onClose={() => setOpenGameEndModal(false)}
-              setToDefaultRow={() => setCurrentRow({ rowIndex: 0, row: defaultAttempt })}
-            />
           </div>
+        )}
+
+        {openGameEndModal && (
+          <GameEndModal
+            word={session?.wordToGuess}
+            isWin={isWin}
+            onClose={() => setOpenGameEndModal(false)}
+            setToDefaultRow={() => setCurrentRow({ rowIndex: 0, row: defaultAttempt })}
+          />
         )}
       </div>
     </div>
