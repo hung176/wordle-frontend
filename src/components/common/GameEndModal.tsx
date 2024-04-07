@@ -12,12 +12,13 @@ interface GameEndModalProps {
   setToDefaultRow: () => void;
 }
 
-const GameEndModal: React.FC<GameEndModalProps> = ({ isWin, word = '', open, onClose, setToDefaultRow }) => {
+const GameEndModal: React.FC<GameEndModalProps> = ({ isWin, word = '', open, onClose }) => {
   const { startNewGame } = useSession();
   const [, setSessionId] = useLocalStorage('sessionId', null);
+  const [settings] = useLocalStorage('settings', { dailyMode: false, swapButton: false });
 
   const handleNewGame = async () => {
-    const newSession = await startNewGame();
+    const newSession = await startNewGame({ sessionId: null, settings });
     setSessionId(newSession.sessionId);
     onClose();
     window.location.reload();

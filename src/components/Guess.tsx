@@ -1,6 +1,6 @@
 import React from 'react';
 import Letter from './Letter';
-import { Attempt, LetterAnimationType, Letter as LetterType } from '@/types';
+import { Attempt, LetterAnimationType } from '@/types';
 import { usePrevious } from '@/hooks/usePrevious';
 
 interface GuessProps {
@@ -18,24 +18,21 @@ const Guess: React.FC<GuessProps> = ({ attempt, isRowFlipping, isRowShaking, isR
       {attempt.map(({ letter, position, green, yellow, gray }, idx) => {
         const shakingIndex = previousRow[idx].letter === '' && letter !== '';
 
-        let animationType: LetterAnimationType;
-        if (isRowTyping && shakingIndex) {
-          animationType = LetterAnimationType.TYPING;
-        } else if (isRowFlipping) {
-          animationType = LetterAnimationType.FLIP;
-        } else if (isRowShaking) {
-          animationType = LetterAnimationType.SHAKE;
-        } else {
-          animationType = LetterAnimationType.INITIAL;
-        }
-
         return (
           <Letter
             key={position}
             letter={letter}
             position={position}
             color={(green && 'green') || (yellow && 'yellow') || (gray && 'gray') || ''}
-            animation={animationType}
+            animation={
+              isRowFlipping
+                ? LetterAnimationType.FLIP
+                : isRowShaking
+                ? LetterAnimationType.SHAKE
+                : isRowTyping && shakingIndex
+                ? LetterAnimationType.TYPING
+                : LetterAnimationType.INITIAL
+            }
             flipDelay={idx * 0.5}
             incrementIndex={incrementIndex}
           />

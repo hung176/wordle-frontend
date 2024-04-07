@@ -12,12 +12,20 @@ import Toast from '@/components/common/Toast';
 import Hint from '@/components/common/Hint';
 import { usePrevious } from '@/hooks/usePrevious';
 import GameEndModal from '@/components/common/GameEndModal';
-import Setting from '@/components/Setting';
+import Setting, { SettingType } from '@/components/Setting';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 const WordleGame: React.FC<any> = () => {
   const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
   const [openGameEndModal, setOpenGameEndModal] = React.useState<boolean>(false);
+
   const [isSettingOpen, setIsSettingOpen] = React.useState<boolean>(false);
+  const defaultSetting: SettingType = {
+    dailyMode: false,
+    swapButton: false,
+  };
+  const [settingsStorage] = useLocalStorage('settings', defaultSetting);
+  const [settings, setSettings] = React.useState<typeof defaultSetting>(settingsStorage || defaultSetting);
 
   const { session, error, isLoading, mutate, submitGuess, endSession, isMutating, isValidating } = useSession();
   const toast = useToast();
@@ -65,7 +73,6 @@ const WordleGame: React.FC<any> = () => {
   const isLose = session?.status === STATUS.FAILED || session?.status === STATUS.ENDED;
 
   const handleKeyChange = async (char: string) => {
-    console.log(char);
     if (isWin || isLose) {
       return;
     }
@@ -208,7 +215,9 @@ const WordleGame: React.FC<any> = () => {
           </div>
           <div className="w-[350px] flex justify-end items-center">
             <motion.div
-              className="bg-gray-200 rounded-md flex justify-center items-center p-1"
+              className={`bg-gray-200 rounded-md flex justify-center items-center p-1 ${
+                isWin || isLose ? 'pointer-events-none opacity-50' : ''
+              }`}
               onClick={toggleSetting}
               variants={{
                 rest: { scale: 1 },
@@ -238,8 +247,8 @@ const WordleGame: React.FC<any> = () => {
           </div>
         </div>
         {isSettingOpen && (
-          <div className="h-[540px] min-[376px]:h-[596px]">
-            <Setting toggleSetting={toggleSetting} />
+          <div className="w-[100%] h-[540px] min-[376px]:h-[596px]">
+            <Setting settings={settings} setSettings={setSettings} toggle={() => setIsSettingOpen(false)} />
           </div>
         )}
 
@@ -260,7 +269,12 @@ const WordleGame: React.FC<any> = () => {
               })}
             </div>
 
-            <div className="mb-5">
+            <div className="mb-5 flex justify-center items-center">
+              {settings.dailyMode && (
+                <span className="bg-gray-400 text-white font-medium me-2 px-2.5 py-0.5 rounded p-4 text-sm">
+                  Daily Mode
+                </span>
+              )}
               {isWin && (
                 <span className="bg-green-100 text-green-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
                   You Won!

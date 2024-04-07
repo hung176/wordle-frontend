@@ -48,7 +48,7 @@ const Letter: React.FC<LetterProps> = ({ letter, position, color, animation, fli
     return () => {
       scope.current?.removeAttribute('style');
     };
-  }, [animation, letter]);
+  }, [animation]);
 
   return (
     <div

@@ -2,13 +2,13 @@ import React from 'react';
 import useSWRMutation from 'swr/mutation';
 import useSWR from 'swr';
 import { useLocalStorage } from './useLocalStorage';
-import { SettingProps, SettingType } from '@/components/Setting';
+import { SettingType } from '@/components/Setting';
 
 export const START_API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/start`;
 export const GUESS_API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/guess`;
 export const END_API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/end`;
 
-export const fetchSession = async (url: string, body: { sessionId: string | null | undefined }) => {
+export const fetchSession = async (url: string, body: { sessionId: string | null }) => {
   const res = await fetch(url, {
     method: 'POST',
     headers: {
@@ -63,23 +63,21 @@ const endSessionFetcher = async (url: string, { arg }: { arg: { sessionId: strin
   return await res.json();
 };
 
-async function startNewSession(url: string) {
+async function startNewSession(url: string, { arg }: { arg: { sessionId: string | null; settings?: SettingType } }) {
   const res = await fetch(url, {
     method: 'POST',
     headers: {
       accept: 'application/json',
       'content-type': 'application/json',
     },
-    body: JSON.stringify({ sessionId: null }),
+    body: JSON.stringify({ sessionId: null, dailyMode: arg?.settings?.dailyMode }),
   });
   return await res.json();
 }
 
 export default function useSession() {
   const [sessionId, saveSessionId] = useLocalStorage<string | null>('sessionId', null);
-  const [setting, setSetting] = useLocalStorage<SettingType>('setting', { dailyMode: false, swapButton: false });
-
-  // const { dailyMode = false, swapButton = false } = setting;
+  const [settings] = useLocalStorage('settings', null);
 
   const { data, error, mutate, isLoading, isValidating } = useSWR(
     START_API_URL,
@@ -109,7 +107,5 @@ export default function useSession() {
     submitGuess,
     endSession,
     startNewGame,
-    setting,
-    setSetting,
   };
 }
