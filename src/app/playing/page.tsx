@@ -10,11 +10,9 @@ import { Attempt, STATUS } from '@/types';
 import { useToast } from '../context/toast-provider';
 import Toast from '@/components/common/Toast';
 import Hint from '@/components/common/Hint';
-import { usePrevious } from '@/hooks/usePrevious';
 import GameEndModal from '@/components/common/GameEndModal';
 import Setting, { SettingType } from '@/components/Setting';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import Modal from '@/components/common/Modal';
 
 const WordleGame: React.FC<any> = () => {
   const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
@@ -28,7 +26,8 @@ const WordleGame: React.FC<any> = () => {
   const [settingsStorage] = useLocalStorage('settings', defaultSetting);
   const [settings, setSettings] = React.useState<typeof defaultSetting>(settingsStorage || defaultSetting);
 
-  const { session, error, isLoading, mutate, submitGuess, endSession, isMutating, isValidating } = useSession();
+  const { session, validWords, error, isLoading, mutate, submitGuess, endSession, isMutating, isValidating } =
+    useSession();
   const toast = useToast();
 
   const defaultAttempt: Attempt = Array(5)
@@ -47,9 +46,9 @@ const WordleGame: React.FC<any> = () => {
 
   const [currentRow, setCurrentRow] = React.useState({ row: defaultAttempt, rowIndex: 0 });
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
-  const [isValidWord, setIsValidWord] = React.useState<boolean | null>(null);
   const [isTyping, setIsTyping] = React.useState<boolean>(false);
-  const previousRow = usePrevious(currentRow);
+  const [isShaking, setIsShaking] = React.useState<boolean>(false);
+  console.log(isShaking);
 
   const refDiv = React.useRef<HTMLDivElement>(null);
 
@@ -60,7 +59,6 @@ const WordleGame: React.FC<any> = () => {
   React.useEffect(() => {
     if (session && session?.attempts.length !== currentRow.rowIndex) {
       setCurrentRow({ ...currentRow, rowIndex: session?.attempts.length });
-      setIsValidWord(null);
     }
   }, [session]);
 
@@ -69,6 +67,12 @@ const WordleGame: React.FC<any> = () => {
       setOpenGameEndModal(true);
     }
   }, [session?.status]);
+
+  React.useEffect(() => {
+    if (openGameEndModal || openHowToPlay || isSettingOpen) {
+      setIsShaking(false);
+    }
+  }, [openGameEndModal, openHowToPlay, isSettingOpen]);
 
   const isWin = session?.status === STATUS.SUCCESS;
   const isLose = session?.status === STATUS.FAILED || session?.status === STATUS.ENDED;
@@ -84,33 +88,26 @@ const WordleGame: React.FC<any> = () => {
       }
 
       const currentGuess = currentRow.row.reduce((acc, curr) => acc + curr.letter, '');
-      const previousGuess = previousRow?.row.reduce((acc, curr) => acc + curr.letter, '');
       const sessionId = session?.sessionId as string;
 
       if (currentGuess.length < 5) {
         toast.open({
           component: <Toast message="Please enter 5 letters" />,
-          timeout: 5000,
+          timeout: 4000,
         });
         return;
       }
 
-      setIsValidWord(true);
-
-      if (currentGuess === previousGuess) {
+      if (!validWords.includes(currentGuess)) {
+        toast.open({
+          component: <Toast message="The word is not in the list" />,
+          timeout: 4000,
+        });
+        setIsShaking(true);
         return;
       }
 
       const newSession = await submitGuess({ guess: currentGuess, sessionId });
-      if (newSession.wordNotInList) {
-        setIsValidWord(false);
-        toast.open({
-          component: <Toast message="The word is not in the list" />,
-          timeout: 5000,
-        });
-        return;
-      }
-
       const newCurrentRow = newSession.attempts[newSession.attempts.length - 1];
       setCurrentRow({ ...currentRow, row: newCurrentRow });
       setIsSubmitting(true);
@@ -123,7 +120,7 @@ const WordleGame: React.FC<any> = () => {
       }
     } else if (KeyPressType.BACKSPACE === char) {
       setIsTyping(false);
-      setIsValidWord(null);
+      setIsShaking(false);
       const newCurrentRow = [...currentRow.row];
       let findEmpty = newCurrentRow.findIndex((item) => item.letter === '');
       if (findEmpty === -1) {
@@ -137,7 +134,7 @@ const WordleGame: React.FC<any> = () => {
       setIsSubmitting(false);
     } else {
       setIsTyping(true);
-      setIsValidWord(null);
+      setIsShaking(false);
       const newCurrentRow = [...currentRow.row];
       const findEmpty = newCurrentRow.findIndex((item) => item.letter === '');
       if (findEmpty === -1) {
@@ -265,7 +262,7 @@ const WordleGame: React.FC<any> = () => {
                     key={idx}
                     attempt={currentRow.rowIndex === idx ? currentRow.row : row}
                     isRowFlipping={currentRow.rowIndex === idx && isSubmitting}
-                    isRowShaking={currentRow.rowIndex === idx && isValidWord === false}
+                    isRowShaking={currentRow.rowIndex === idx && isShaking}
                     isRowTyping={currentRow.rowIndex === idx && isTyping}
                     incrementIndex={handleIncrementIndex}
                   />
