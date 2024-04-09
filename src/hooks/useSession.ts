@@ -83,12 +83,21 @@ async function startNewSession(url: string, { arg }: { arg: { sessionId: string 
     },
     body: JSON.stringify({ sessionId: null, dailyMode: arg?.settings?.dailyMode }),
   });
+  if (!res.ok) {
+    const error = new Error('An error occurred while fetching the data.');
+    throw error;
+  }
+
   return await res.json();
 }
 
 export default function useSession() {
   const [sessionId, saveSessionId] = useLocalStorage<string | null>('sessionId', null);
+  const [settings, setSettings] = useLocalStorage('settings', { dailyMode: false, swapButton: false });
 
+  // bug
+  // setting to daily mode but when remove the sessionId from localStorage -> it will not start a new game not in daily mode
+  // but still display the daily mode setting
   const { data, error, mutate, isLoading, isValidating } = useSWR(
     START_API_URL,
     (url: string) => fetchSession(url, { sessionId }),

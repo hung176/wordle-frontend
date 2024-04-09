@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import VirtualKeyboard, { KEYS, KeyPressType } from '@/components/VirtualKeyboard';
 import Guess from '@/components/Guess';
@@ -16,6 +17,8 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import GenerateWord from '@/components/GenerateWord';
 
 const WordleGame: React.FC<any> = () => {
+  const searchParams = useSearchParams();
+
   const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
   const [openGameEndModal, setOpenGameEndModal] = React.useState<boolean>(false);
   const [openGenerateWord, setOpenGenerateWord] = React.useState<boolean>(false);
@@ -52,8 +55,6 @@ const WordleGame: React.FC<any> = () => {
   const [isShaking, setIsShaking] = React.useState<boolean>(false);
 
   const refDiv = React.useRef<HTMLDivElement>(null);
-
-  console.log('openGenerateWord', openGenerateWord);
 
   React.useEffect(() => {
     if (!openGenerateWord) {
@@ -311,12 +312,12 @@ const WordleGame: React.FC<any> = () => {
             <div ref={refDiv} tabIndex={-1} onKeyDown={handleKeyDown} className="outline-none">
               <VirtualKeyboard keyColors={session?.keyboardColor || {}} onKeyChange={handleKeyChange} />
             </div>
-
-            {openHowToPlay && <HowToPlay onClose={() => setOpenHowToPlay(false)} />}
-
-            {openGenerateWord && <GenerateWord onClose={() => setOpenGenerateWord(false)} />}
           </div>
         )}
+
+        {openHowToPlay && <HowToPlay onClose={() => setOpenHowToPlay(false)} />}
+
+        {openGenerateWord && <GenerateWord onClose={() => setOpenGenerateWord(false)} />}
 
         {openGameEndModal && (
           <GameEndModal
