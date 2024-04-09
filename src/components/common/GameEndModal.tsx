@@ -5,13 +5,14 @@ import useSession from '@/hooks/useSession';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 interface GameEndModalProps {
+  isOpen: boolean;
   isWin: boolean;
   word: string;
   onClose: () => void;
   setToDefaultRow: () => void;
 }
 
-const GameEndModal: React.FC<GameEndModalProps> = ({ isWin, word = '', onClose }) => {
+const GameEndModal: React.FC<GameEndModalProps> = ({ isOpen, isWin, word = '', onClose }) => {
   const { startNewGame } = useSession();
   const [, setSessionId] = useLocalStorage('sessionId', null);
   const [settings] = useLocalStorage('settings', { dailyMode: false, swapButton: false });
@@ -23,7 +24,7 @@ const GameEndModal: React.FC<GameEndModalProps> = ({ isWin, word = '', onClose }
     window.location.reload();
   };
   return (
-    <Modal isOpen onClose={onClose} closeOnOutsideClick={false}>
+    <Modal isOpen={isOpen} onClose={onClose} closeOnOutsideClick={false}>
       <div className="w-[300px] h-[400px] flex flex-col justify-start items-center">
         <div
           className={`w-[100%] ${

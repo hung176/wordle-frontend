@@ -58,10 +58,8 @@ const WordleGame: React.FC<any> = () => {
 
   React.useEffect(() => {
     if (!openGenerateWord) {
-      console.log('focus');
       refDiv.current?.focus();
     } else {
-      console.log('blur');
       refDiv.current?.blur();
     }
   }, [openGenerateWord]);
@@ -319,14 +317,13 @@ const WordleGame: React.FC<any> = () => {
 
         {openGenerateWord && <GenerateWord onClose={() => setOpenGenerateWord(false)} />}
 
-        {openGameEndModal && (
-          <GameEndModal
-            word={session?.wordToGuess}
-            isWin={isWin}
-            onClose={() => setOpenGameEndModal(false)}
-            setToDefaultRow={() => setCurrentRow({ rowIndex: 0, row: defaultAttempt })}
-          />
-        )}
+        <GameEndModal
+          isOpen={openGameEndModal}
+          word={session?.wordToGuess}
+          isWin={isWin}
+          onClose={() => setOpenGameEndModal(false)}
+          setToDefaultRow={() => setCurrentRow({ rowIndex: 0, row: defaultAttempt })}
+        />
       </div>
     </div>
   );

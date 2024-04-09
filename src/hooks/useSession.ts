@@ -19,7 +19,8 @@ export const fetchValid = async (url: string) => {
   return await res.json();
 };
 
-export const fetchSession = async (url: string, body: { sessionId: string | null }) => {
+export const fetchSession = async (url: string, body: { sessionId: string | null; dailyMode?: boolean }) => {
+  console.log('body', body);
   const res = await fetch(url, {
     method: 'POST',
     headers: {
@@ -93,14 +94,11 @@ async function startNewSession(url: string, { arg }: { arg: { sessionId: string 
 
 export default function useSession() {
   const [sessionId, saveSessionId] = useLocalStorage<string | null>('sessionId', null);
-  const [settings, setSettings] = useLocalStorage('settings', { dailyMode: false, swapButton: false });
+  const [settings] = useLocalStorage('settings', { dailyMode: false, swapButton: false });
 
-  // bug
-  // setting to daily mode but when remove the sessionId from localStorage -> it will not start a new game not in daily mode
-  // but still display the daily mode setting
   const { data, error, mutate, isLoading, isValidating } = useSWR(
     START_API_URL,
-    (url: string) => fetchSession(url, { sessionId }),
+    (url: string) => fetchSession(url, { sessionId, dailyMode: settings.dailyMode }),
     {
       revalidateOnFocus: false,
     }
