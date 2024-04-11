@@ -252,13 +252,19 @@ const WordleGame: React.FC<any> = () => {
                 <Cog8ToothIcon className="w-6 h-6 cursor-pointer text-wl-gray" />
               </motion.div>
             </motion.div>
-            <button
+            <motion.button
               onClick={handleGiveUp}
               disabled={isLose || isWin}
-              className="px-2 py-1 ml-2 w-20 h-7 bg-gray-200 rounded-md text-sm hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              variants={{
+                rest: { x: 0, y: 0},
+                hover: { x: -3, y: -3, backgroundImage: 'linear-gradient(to top, #dfe9f3 0%, white 100%)', transition: { duration: 0.3 } },
+              }}
+              initial="rest"
+              whileHover="hover"
+              className='px-2 ml-2 w-20 h-7 border border-gray-200 text-sm rounded-md'
             >
               Give up
-            </button>
+            </motion.button>
           </div>
         </div>
         {isSettingOpen && (

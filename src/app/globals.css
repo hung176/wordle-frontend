@@ -32,4 +32,6 @@ body {
   padding: 0;
   width: 100wh;
   height: 100vh;
+  background-image: linear-gradient(to top, #dfe9f3 0%, white 100%);
 }
+

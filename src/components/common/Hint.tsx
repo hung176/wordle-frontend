@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useHint } from '@/hooks/useHints';
 import { mutate } from 'swr';
 import { START_API_URL } from '@/hooks/useSession';
@@ -25,13 +26,19 @@ const Hint: React.FC<{ sessionId: string; isDisabled: boolean; prevHints: string
 
   return (
     <div className="relative mr-2">
-      <button
+      <motion.button
         disabled={isDisabled}
         onClick={handleOpen}
-        className="px-2 py-1 w-20 h-7 bg-gray-200 rounded-md text-sm hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed focus:ring focus:ring-gray-300"
+        variants={{
+          rest: { x: 0, y: 0},
+          hover: { x: -3, y: -3, backgroundImage: 'linear-gradient(to top, #dfe9f3 0%, white 100%)', transition: { duration: 0.3 } },
+        }}
+        initial="rest"
+        whileHover="hover"
+        className="px-2 py-1 w-20 h-7 border border-gray-200 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed focus:ring focus:ring-gray-300"
       >
         Get hints
-      </button>
+      </motion.button>
 
       {isOpen && (
         <div className="absolute top-[2.5rem] rounded-xl z-auto justify-center w-[15rem] min-[376px]:w-[20rem] bg-gray-100">
