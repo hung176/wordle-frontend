@@ -31,7 +31,7 @@ const Hint: React.FC<{ sessionId: string; isDisabled: boolean; prevHints: string
         onClick={handleOpen}
         variants={{
           rest: { x: 0, y: 0},
-          hover: { x: -3, y: -3, backgroundImage: 'linear-gradient(to top, #dfe9f3 0%, white 100%)', transition: { duration: 0.3 } },
+          hover: { backgroundImage: 'linear-gradient(to top, #dfe9f3 0%, white 100%)', transition: { duration: 0.7 } },
         }}
         initial="rest"
         whileHover="hover"

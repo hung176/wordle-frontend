@@ -8,6 +8,7 @@ export const START_API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/start`;
 export const GUESS_API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/guess`;
 export const END_API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/end`;
 export const FETCH_VALID_WORDS_API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/valid`;
+export const SUBMIT_CHALLENGE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/challenge`;
 
 export const fetchValid = async (url: string) => {
   const res = await fetch(url);
