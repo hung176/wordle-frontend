@@ -21,7 +21,6 @@ export const fetchValid = async (url: string) => {
 };
 
 export const fetchSession = async (url: string, body: { sessionId: string | null; dailyMode?: boolean }) => {
-  console.log('body', body);
   const res = await fetch(url, {
     method: 'POST',
     headers: {

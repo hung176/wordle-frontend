@@ -13,36 +13,26 @@ export interface GenerateWordProps {
 
 const GenerateWord: React.FC<GenerateWordProps> = ({ onClose }) => {
   const { validWords } = useSession();
-  const toast = useToast();
   const [word, setWord] = useState<string>('');
+  const [testMsg, setTestMsg] = useState<string>('');
   const pathname = usePathname();
 
-  // React.useEffect(() => {
-  //   ref.current?.focus();
-
-  //   return () => {
-  //     ref.current?.blur();
-  //   };
-  // }, []);
-
   const handleWordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setWord(e.target.value);
+    const inputText = e.target.value;
+    setWord(inputText);
+    if (inputText.length !== 5) {
+      setTestMsg('The word must have 5 letters');
+    } else if (!/^[a-zA-Z]+$/.test(inputText)) {
+      setTestMsg('The word must contain only letters');
+    } else if (!validWords.includes(inputText)) {
+      setTestMsg('The word is not correct');
+    } else {
+      setTestMsg('');
+    }
   };
 
   const handleGenerateWord = async () => {
-    if (word.length !== 5) {
-      toast.open({
-        component: <Toast message="The word must have 5 letters" />,
-        timeout: 3000,
-      });
-      return;
-    }
-    const isValidWord = validWords.includes(word);
-    if (!isValidWord) {
-      toast.open({
-        component: <Toast message="The word is not correct" />,
-        timeout: 3000,
-      });
+    if (testMsg) {
       return;
     }
     const response = await fetch(SUBMIT_CHALLENGE_URL, {
@@ -63,7 +53,7 @@ const GenerateWord: React.FC<GenerateWordProps> = ({ onClose }) => {
 
   return (
     <Modal isOpen onClose={onClose} closeOnOutsideClick={false}>
-      <div className="generate-word rounded-t-lg shadow-md">
+      <div className="generate-word rounded-lg shadow-md">
         <div className="relative round-t-lg border-b-2 border-b-white flex justify-center items-center p-2">
           <div className="text-lg font-bold">Wordle generator</div>
           <button onClick={onClose} className="absolute right-4 top-2 text-lg ">
@@ -71,17 +61,19 @@ const GenerateWord: React.FC<GenerateWordProps> = ({ onClose }) => {
           </button>
         </div>
 
-        <div className="flex flex-col items-center px-8 py-6">
+        <div className="flex flex-col items-center px-8 pt-4 pb-8">
           <p className="text-sm mb-2">Challenge your friends a word with 5 letters:</p>
           <input
             value={word}
             onChange={handleWordChange}
-            className="w-[100%] bg-gray-100 p-2 mb-4 rounded-md focus:outline-none focus:bg-white"
+            className="w-[100%] bg-gray-100 p-2 mb-2 rounded-md focus:outline-none focus:bg-white"
             placeholder="Enter a word with 5 letters"
           />
+          <span className="text-sm text-red-300 mb-2">{testMsg}</span>
           <motion.button
+            disabled={!!testMsg || !word}
             onClick={handleGenerateWord}
-            className="p-2 text-sm mb-4 bg-white rounded-md flex justify-center items-center"
+            className="p-2 text-sm mb-4 bg-white rounded-md flex justify-center items-center disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring focus:ring-gray-300"
             whileHover={{ scale: 1.1 }}
             transition={{ type: 'spring', stiffness: 400, damping: 10 }}
           >
