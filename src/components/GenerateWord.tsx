@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useClipboard } from 'use-clipboard-copy';
 import Modal from './common/Modal';
 import { ClipboardDocumentCheckIcon } from '@heroicons/react/24/solid';
 import useSession, { SUBMIT_CHALLENGE_URL } from '@/hooks/useSession';
 import { usePathname } from 'next/navigation';
-import { useToast } from '@/app/context/toast-provider';
-import Toast from './common/Toast';
 
 export interface GenerateWordProps {
   onClose: () => void;
@@ -16,6 +15,7 @@ const GenerateWord: React.FC<GenerateWordProps> = ({ onClose }) => {
   const [word, setWord] = useState<string>('');
   const [testMsg, setTestMsg] = useState<string>('');
   const pathname = usePathname();
+  const clipboard = useClipboard();
 
   const handleWordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputText = e.target.value;
@@ -48,7 +48,7 @@ const GenerateWord: React.FC<GenerateWordProps> = ({ onClose }) => {
 
     const origin = window.location.origin;
     const url = `${origin}${pathname}?challengeId=${challengeId}`;
-    navigator.clipboard.writeText(url);
+    clipboard.copy(url);
   };
 
   return (
