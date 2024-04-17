@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useClipboard } from 'use-clipboard-copy';
 import Modal from './common/Modal';
+import ShareUrl from './common/ShareUrl';
 import { ClipboardDocumentCheckIcon } from '@heroicons/react/24/solid';
-import useSession, { SUBMIT_CHALLENGE_URL } from '@/hooks/useSession';
+import useSession, { CHALLENGE_API_URL } from '@/hooks/useSession';
 import { usePathname } from 'next/navigation';
+import { usePrevious } from '@/hooks/usePrevious';
 
 export interface GenerateWordProps {
   onClose: () => void;
@@ -12,43 +12,45 @@ export interface GenerateWordProps {
 
 const GenerateWord: React.FC<GenerateWordProps> = ({ onClose }) => {
   const { validWords } = useSession();
-  const [word, setWord] = useState<string>('');
-  const [testMsg, setTestMsg] = useState<string>('');
+  const ref = React.useRef({} as HTMLInputElement);
+  const [url, setUrl] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [validateMsg, setValidateMsg] = useState<string>('');
   const pathname = usePathname();
-  const clipboard = useClipboard();
 
-  const handleWordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputText = e.target.value;
-    setWord(inputText);
-    if (inputText.length !== 5) {
-      setTestMsg('The word must have 5 letters');
-    } else if (!/^[a-zA-Z]+$/.test(inputText)) {
-      setTestMsg('The word must contain only letters');
-    } else if (!validWords.includes(inputText)) {
-      setTestMsg('The word is not correct');
-    } else {
-      setTestMsg('');
+  const handleGenerateLink = async () => {
+    if (ref?.current) {
+      const word = ref.current?.value.toLowerCase();
+
+      if (word.length !== 5) {
+        setValidateMsg('The word must have 5 letters');
+        return;
+      } else if (!/^[a-zA-Z]+$/.test(word)) {
+        setValidateMsg('The word must contain only letters');
+        return;
+      } else if (!validWords.includes(word)) {
+        setValidateMsg('The word is not correct');
+        return;
+      }
+
+      setLoading(true);
+
+      const response = await fetch(CHALLENGE_API_URL, {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ word }),
+      });
+
+      const { challengeId } = await response.json();
+
+      const origin = window.location.origin;
+      setUrl(`${origin}${pathname}?challengeId=${challengeId}`);
+
+      setLoading(false);
     }
-  };
-
-  const handleGenerateWord = async () => {
-    if (testMsg) {
-      return;
-    }
-    const response = await fetch(SUBMIT_CHALLENGE_URL, {
-      method: 'POST',
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({ word }),
-    });
-
-    const { challengeId } = await response.json();
-
-    const origin = window.location.origin;
-    const url = `${origin}${pathname}?challengeId=${challengeId}`;
-    clipboard.copy(url);
   };
 
   return (
@@ -64,30 +66,19 @@ const GenerateWord: React.FC<GenerateWordProps> = ({ onClose }) => {
         <div className="flex flex-col items-center px-8 pt-4 pb-8">
           <p className="text-sm mb-2">Challenge your friends a word with 5 letters:</p>
           <input
-            value={word}
-            onChange={handleWordChange}
-            className="w-[100%] bg-gray-100 p-2 mb-2 rounded-md focus:outline-none focus:bg-white"
+            ref={ref}
+            onChange={() => setValidateMsg('')}
+            className="w-[100%] bg-gray-100 p-2 rounded-md focus:outline-none focus:bg-white"
             placeholder="Enter a word with 5 letters"
           />
-          <span className="text-sm text-red-300 mb-2">{testMsg}</span>
-          <motion.button
-            disabled={!!testMsg || !word}
-            onClick={handleGenerateWord}
-            className="p-2 text-sm mb-4 bg-white rounded-md flex justify-center items-center disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring focus:ring-gray-300"
-            whileHover={{ scale: 1.1 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-          >
-            Copy link
-          </motion.button>
-
-          <p className="text-sm mb-2">or challenge this word:</p>
-          <div className="flex items-center justify-between text-gray-800 border border-gray-800 bg-white max-w-sm font-mono text-sm py-3 px-4 w-[250px] rounded-md">
-            <div className="flex gap-1">
-              <span>https://example.com</span>
-            </div>
-            <span className="flex text-gray-800 cursor-pointer w-5 h-5 hover:text-gray-400 duration-200"></span>
-            <ClipboardDocumentCheckIcon className="w-6 h-6 text-gray-800 cursor-pointer hover:text-gray-400 duration-200" />
+          <span className="text-sm text-red-500 mb-2">{validateMsg}</span>
+          <button className=" w-[100%] rounded-md bg-white p-2 text-sm" onClick={handleGenerateLink}>
+            {loading ? 'Generating...' : 'Generate'}
+          </button>
+          <div className='w-[100%] mt-2'>
+            {url && <ShareUrl url={url} />}
           </div>
+
         </div>
       </div>
     </Modal>

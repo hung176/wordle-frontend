@@ -17,8 +17,6 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import GenerateWord from '@/components/GenerateWord';
 
 const WordleGame: React.FC<any> = () => {
-  const searchParams = useSearchParams();
-
   const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
   const [openGameEndModal, setOpenGameEndModal] = React.useState<boolean>(false);
   const [openGenerateWord, setOpenGenerateWord] = React.useState<boolean>(false);
@@ -33,6 +31,7 @@ const WordleGame: React.FC<any> = () => {
 
   const { session, validWords, error, isLoading, mutate, submitGuess, endSession, isMutating, isValidating } =
     useSession();
+
   const toast = useToast();
 
   const defaultAttempt: Attempt = Array(5)
@@ -256,12 +255,15 @@ const WordleGame: React.FC<any> = () => {
               onClick={handleGiveUp}
               disabled={isLose || isWin}
               variants={{
-                rest: { x: 0, y: 0},
-                hover: { backgroundImage: 'linear-gradient(to top, #dfe9f3 0%, white 100%)', transition: { duration: 0.7 } },
+                rest: { x: 0, y: 0 },
+                hover: {
+                  backgroundImage: 'linear-gradient(to top, #dfe9f3 0%, white 100%)',
+                  transition: { duration: 0.7 },
+                },
               }}
               initial="rest"
               whileHover="hover"
-              className='px-2 ml-2 w-20 h-7 border border-gray-200 text-sm rounded-md'
+              className="px-2 ml-2 w-20 h-7 border border-gray-200 text-sm rounded-md"
             >
               Give up
             </motion.button>
@@ -299,6 +301,11 @@ const WordleGame: React.FC<any> = () => {
               {settings.dailyMode && (
                 <span className="bg-gray-400 text-white font-medium me-2 px-2.5 py-0.5 rounded p-4 text-sm">
                   Daily Mode
+                </span>
+              )}
+              {session?.challengeId && (
+                <span className="bg-gray-400 text-white font-medium me-2 px-2.5 py-0.5 rounded p-4 text-sm">
+                  Challenge Mode
                 </span>
               )}
               {isWin && (
