@@ -14,6 +14,12 @@ export enum LetterAnimationType {
   SHAKE,
 }
 
+export enum ChallengeType {
+  DAILY = 'DAILY',
+  CHALLENGE = 'CHALLENGE',
+  INFINITE = 'INFINITE',
+}
+
 export type Letter = {
   letter?: string;
   position?: number;
@@ -27,6 +33,8 @@ export type Attempt = Letter[];
 export type SessionType = {
   sessionId: string;
   // userId: string;
+  challengeId?: string;
+  challengeType?: ChallengeType;
   wordToGuess: string;
   attemptsRemaining: number;
   attempts: Attempt[];

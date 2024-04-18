@@ -7,7 +7,7 @@ import Guess from '@/components/Guess';
 import HowToPlay from '@/components/HowToPlay';
 import { Cog8ToothIcon, QuestionMarkCircleIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import useSession from '@/hooks/useSession';
-import { Attempt, STATUS } from '@/types';
+import { Attempt, ChallengeType, STATUS } from '@/types';
 import { useToast } from '../context/toast-provider';
 import Toast from '@/components/common/Toast';
 import Hint from '@/components/common/Hint';
@@ -17,6 +17,9 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import GenerateWord from '@/components/GenerateWord';
 
 const WordleGame: React.FC<any> = () => {
+  const { session, validWords, error, isLoading, mutate, submitGuess, endSession, isMutating, isValidating } =
+    useSession();
+
   const [openHowToPlay, setOpenHowToPlay] = React.useState<boolean>(false);
   const [openGameEndModal, setOpenGameEndModal] = React.useState<boolean>(false);
   const [openGenerateWord, setOpenGenerateWord] = React.useState<boolean>(false);
@@ -28,9 +31,6 @@ const WordleGame: React.FC<any> = () => {
   };
   const [settingsStorage] = useLocalStorage('settings', defaultSetting);
   const [settings, setSettings] = React.useState<typeof defaultSetting>(settingsStorage || defaultSetting);
-
-  const { session, validWords, error, isLoading, mutate, submitGuess, endSession, isMutating, isValidating } =
-    useSession();
 
   const toast = useToast();
 
@@ -298,12 +298,12 @@ const WordleGame: React.FC<any> = () => {
             </div>
 
             <div className="mb-5 flex justify-center items-center">
-              {settings.dailyMode && (
+              {session?.challengeType === ChallengeType.DAILY && (
                 <span className="bg-gray-400 text-white font-medium me-2 px-2.5 py-0.5 rounded p-4 text-sm">
                   Daily Mode
                 </span>
               )}
-              {session?.challengeId && (
+              {session?.challengeType === ChallengeType.CHALLENGE && (
                 <span className="bg-gray-400 text-white font-medium me-2 px-2.5 py-0.5 rounded p-4 text-sm">
                   Challenge Mode
                 </span>

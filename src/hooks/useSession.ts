@@ -112,12 +112,17 @@ async function fetchChallenge(payload: [string, { challengeId: string; sessionId
 export default function useSession() {
   const searchParams = useSearchParams();
   const challengeId = searchParams.get('challengeId');
-  console.log('challengeId', challengeId);
 
   const [sessionId, saveSessionId] = useLocalStorage<string | null>('sessionId', null);
   const [settings] = useLocalStorage('settings', { dailyMode: false, swapButton: false });
 
-  const { data, error, mutate: normalMutate, isLoading, isValidating } = useSWR(
+  const {
+    data,
+    error,
+    mutate: normalMutate,
+    isLoading,
+    isValidating,
+  } = useSWR(
     challengeId ? null : START_API_URL,
     (url: string) => fetchSession(url, { sessionId, dailyMode: settings.dailyMode }),
     {
@@ -140,6 +145,7 @@ export default function useSession() {
   const { trigger: startNewGame } = useSWRMutation(START_API_URL, startNewSession);
   const { data: validWords = [] } = useSWR(FETCH_VALID_WORDS_API_URL, fetchValid, {
     revalidateOnFocus: false,
+    revalidateIfStale: false,
   });
 
   React.useEffect(() => {
