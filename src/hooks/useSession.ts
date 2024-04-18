@@ -114,7 +114,7 @@ export default function useSession() {
   const challengeId = searchParams.get('challengeId');
 
   const [sessionId, saveSessionId] = useLocalStorage<string | null>('sessionId', null);
-  const [settings] = useLocalStorage('settings', { dailyMode: false, swapButton: false });
+  const [settings, setSettings] = useLocalStorage('settings', { dailyMode: false, swapButton: false });
 
   const {
     data,
@@ -153,6 +153,12 @@ export default function useSession() {
       saveSessionId(session.sessionId);
     }
   }, [session?.sessionId]);
+
+  React.useEffect(() => {
+    if (challengeId) {
+      setSettings({ ...settings, dailyMode: false });
+    }
+  }, [challengeId]);
 
   return {
     session,

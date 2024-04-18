@@ -3,6 +3,7 @@ import Modal from './Modal';
 import { LinkIcon } from '@heroicons/react/24/solid';
 import useSession from '@/hooks/useSession';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useSearchParams } from 'next/navigation';
 
 interface GameEndModalProps {
   isOpen: boolean;
@@ -13,11 +14,18 @@ interface GameEndModalProps {
 }
 
 const GameEndModal: React.FC<GameEndModalProps> = ({ isOpen, isWin, word = '', onClose }) => {
+  const searchParams = useSearchParams();
+  const challengeId = searchParams.get('challengeId');
+
   const { startNewGame } = useSession();
   const [, setSessionId] = useLocalStorage('sessionId', null);
   const [settings] = useLocalStorage('settings', { dailyMode: false, swapButton: false });
 
   const handleNewGame = async () => {
+    // if (!challengeId) {
+    //   const newSession = await startNewGame({ sessionId: null, settings });
+    //   setSessionId(newSession.sessionId);
+    // }
     const newSession = await startNewGame({ sessionId: null, settings });
     setSessionId(newSession.sessionId);
     onClose();
