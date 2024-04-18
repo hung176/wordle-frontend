@@ -182,6 +182,16 @@ const WordleGame: React.FC<any> = () => {
   };
 
   const handleGenerateWord = async () => {
+    if (isWin || isLose) {
+      return;
+    }
+    if (session?.challengeType === ChallengeType.CHALLENGE) {
+      toast.open({
+        component: <Toast message="You can't generate a word in challenge mode" />,
+        timeout: 4000,
+      });
+      return;
+    }
     setOpenGenerateWord(!openGenerateWord);
   };
 
