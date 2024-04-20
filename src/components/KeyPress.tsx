@@ -2,6 +2,7 @@
 import React from 'react';
 import { KeyPressType } from './VirtualKeyboard';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { SettingType } from './Setting';
 
 interface KeyPressProps {
   char: string;

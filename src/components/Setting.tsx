@@ -5,6 +5,7 @@ import { ChallengeType } from '@/types';
 
 export type SettingProps = {
   settings: { dailyMode: boolean; swapButton: boolean };
+  timer: { hour: number; minute: number; second: number };
   setSettings: React.Dispatch<React.SetStateAction<{ dailyMode: boolean; swapButton: boolean }>>;
   toggle: () => void;
   isDisabledSetting: boolean;
@@ -15,8 +16,9 @@ export type SettingType = {
   swapButton: boolean;
 };
 
-const Setting: React.FC<SettingProps> = ({ settings, setSettings, toggle, isDisabledSetting }) => {
+const Setting: React.FC<SettingProps> = ({ settings, timer, setSettings, toggle, isDisabledSetting }) => {
   const { session, startNewGame, mutate } = useSession();
+  const { hour, minute, second } = timer;
 
   const [settingsStorage, setSettingsStorage] = useLocalStorage('settings', { dailyMode: false, swapButton: false });
   const [, setSessionId] = useLocalStorage('sessionId', null);
@@ -58,7 +60,9 @@ const Setting: React.FC<SettingProps> = ({ settings, setSettings, toggle, isDisa
           <div className={`flex items-center justify-between`}>
             <div className="text-gray-500 text-sm flex flex-col">
               <span>Guess a chain of words every 24 hours</span>
-              <span>Next word update in...</span>
+              <span>
+                Next word update in <span className="font-semibold font-sans">{`${hour}:${minute}:${second}`}</span>
+              </span>
             </div>
             <label className="relative inline-flex cursor-pointer items-center">
               <input

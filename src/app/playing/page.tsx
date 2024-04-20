@@ -15,6 +15,7 @@ import GameEndModal from '@/components/common/GameEndModal';
 import Setting, { SettingType } from '@/components/Setting';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import GenerateWord from '@/components/GenerateWord';
+import useTimer from '@/hooks/useTimer';
 
 const WordleGame: React.FC<any> = () => {
   const { session, validWords, error, isLoading, mutate, submitGuess, endSession, isMutating, isValidating } =
@@ -31,6 +32,7 @@ const WordleGame: React.FC<any> = () => {
   };
   const [settingsStorage] = useLocalStorage('settings', defaultSetting);
   const [settings, setSettings] = React.useState<typeof defaultSetting>(settingsStorage || defaultSetting);
+  const timer = useTimer();
 
   const toast = useToast();
 
@@ -283,6 +285,7 @@ const WordleGame: React.FC<any> = () => {
           <div className="w-[100%] h-[540px] min-[376px]:h-[596px]">
             <Setting
               settings={settings}
+              timer={timer}
               setSettings={setSettings}
               toggle={() => setIsSettingOpen(false)}
               isDisabledSetting={isWin || isLose}
