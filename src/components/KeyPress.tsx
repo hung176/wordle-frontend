@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { KeyPressType } from './VirtualKeyboard';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 interface KeyPressProps {
   char: string;
@@ -9,15 +10,20 @@ interface KeyPressProps {
 }
 
 const KeyPress: React.FC<KeyPressProps> = ({ char, color, onClickKey }) => {
+  const [settings] = useLocalStorage<SettingType>('settings', { dailyMode: false, swapButton: false });
+
   let overrideStyle = '';
 
   switch (char) {
     case KeyPressType.ENTER:
-      overrideStyle +=
-        'w-[43px] text-sm small-mobile:w-[53px] small-mobile:text-md mobile:w-[65px] mobile:text-lg mr-1';
+      overrideStyle += `w-[43px] text-sm small-mobile:w-[53px] small-mobile:text-md mobile:w-[65px] mobile:text-lg ${
+        settings.swapButton ? 'mr-0' : 'mr-1'
+      }`;
       break;
     case KeyPressType.BACKSPACE:
-      overrideStyle += 'w-[43px] small-mobile:w-[53px] mobile:w-[65px] text-lg mr-0';
+      overrideStyle += `w-[43px] small-mobile:w-[53px] mobile:w-[65px] text-lg ${
+        settings.swapButton ? 'mr-1' : 'mr-0'
+      }`;
       break;
     case KeyPressType.L:
       overrideStyle += 'mr-0';

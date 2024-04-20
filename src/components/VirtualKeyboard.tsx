@@ -1,5 +1,7 @@
 import React from 'react';
 import KeyPress from './KeyPress';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { SettingType } from './Setting';
 
 export enum KeyPressType {
   Q = 'q',
@@ -42,6 +44,12 @@ export const KEYS = [
   ['enter', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '⌫'],
 ];
 
+export const SWAPKEYS = [
+  ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+  ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+  ['⌫', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'enter'],
+];
+
 type VirtualKeyboardProps = {
   keyColors: {
     [key: string]: string;
@@ -51,13 +59,15 @@ type VirtualKeyboardProps = {
 };
 
 const VirtualKeyboard: React.FC<VirtualKeyboardProps> = ({ keyColors, type, onKeyChange }) => {
+  const [settings] = useLocalStorage<SettingType>('settings', { dailyMode: false, swapButton: false });
+  const keyBoard = settings.swapButton ? SWAPKEYS : KEYS;
   const handleClickKey = (key: string) => {
     onKeyChange?.(key);
   };
 
   return (
     <div className="px-2">
-      {KEYS.map((row) => {
+      {keyBoard.map((row) => {
         const rowKey = row.reduce((acc, curr) => acc + curr, '');
         return (
           <div key={rowKey} className="flex items-center justify-center mb-2">
