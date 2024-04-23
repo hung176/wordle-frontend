@@ -1,6 +1,6 @@
 This repository is frontend of wordle game, which game I clone from Wordle game NYT.
 
-![alt text](https://flic.kr/p/2pLRW7p)
+![wordle](https://github.com/hung176/wordle-frontend/assets/60569238/f6482567-addd-4f1b-9603-5c1b13903f21)
 
 I created this game with the following features:
 
