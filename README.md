@@ -1,6 +1,6 @@
 This repository is frontend of wordle game, which game I clone from Wordle game NYT.
 
-![alt text](<[http://url/to/img.png](https://flic.kr/p/2pLRW7p)>)
+![alt text](https://flic.kr/p/2pLRW7p)
 
 I created this game with the following features:
 
